@@ -1,0 +1,12 @@
+<interfaceDefinition version='1.2' language='verilog' kind='module' name='top_lab3_chip'>
+    <portList>
+
+      <port name='nrst' direction='input' type='' kind=''> </port>
+      <port name='clk' direction='input' type='' kind=''> </port>
+      <port name='rxflex' direction='input' type='' kind=''> </port>
+      <port name='txflex' direction='output' type='' kind=''> </port>
+      <port name='ctsflex' direction='output' type='' kind=''> </port>
+      <port name='o_sevenseg' direction='output' type='[15:0]' kind='array' packedDimension='[15:0]'> </port>
+
+    </portList>
+</interfaceDefinition>

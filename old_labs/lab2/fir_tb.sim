@@ -1,0 +1,5 @@
+add wave -radix unsigned -color cyan in_data
+add wave -radix unsigned -color cyan out_data
+add wave -radix unsigned -color plum clock
+
+run 800 ns

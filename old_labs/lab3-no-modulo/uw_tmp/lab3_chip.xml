@@ -1,0 +1,11 @@
+<interfaceDefinition version='1.2' language='verilog' kind='module' name='lab3_chip'>
+    <portList>
+
+      <port name='i_clock' direction='input' type='' kind=''> </port>
+      <port name='i_valid' direction='input' type='' kind=''> </port>
+      <port name='i_input' direction='input' type='[7:0]' kind='array' packedDimension='[7:0]'> </port>
+      <port name='i_reset' direction='input' type='' kind=''> </port>
+      <port name='o_output' direction='output' type='[7:0]' kind='array' packedDimension='[7:0]'> </port>
+
+    </portList>
+</interfaceDefinition>

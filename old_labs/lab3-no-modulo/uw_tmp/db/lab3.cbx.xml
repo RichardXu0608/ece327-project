@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<LOG_ROOT>
+	<PROJECT NAME="lab3">
+		<CBX_INST_ENTRY INSTANCE_NAME="|lab3|ram_dq_8_0:mem|altsyncram:ix64056z44883" CBX_FILE_NAME="altsyncram_hsh2.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|lab3|ram_dq_8_1:mem_0|altsyncram:ix64056z44884" CBX_FILE_NAME="altsyncram_hsh2.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|lab3|ram_dq_8_2:mem_1|altsyncram:ix64056z44885" CBX_FILE_NAME="altsyncram_hsh2.tdf"/>
+	</PROJECT>
+</LOG_ROOT>

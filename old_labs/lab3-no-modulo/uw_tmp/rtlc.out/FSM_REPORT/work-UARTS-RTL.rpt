@@ -1,0 +1,23 @@
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~
+Module : work.UARTS(RTL)
+~~~~~~~~~~~~~~~~~~~~~~~~~
+Number of FSMs Extracted : 2
+
+1.
+--------------------------------------------------
+Number of States                : 4
+Primary State Variable          : TxFSM[4:0]
+Unreachable state(s)            : 1) 01000
+Async set/reset state(s)        : 00001 
+Re-encoding Scheme              : BINARY 
+
+2.
+--------------------------------------------------
+Number of States                : 7
+Primary State Variable          : RxFSM[7:0]
+Unreachable state(s)            : 1) 00010000
+Async set/reset state(s)        : 00000001 
+Re-encoding Scheme              : ONEHOT 

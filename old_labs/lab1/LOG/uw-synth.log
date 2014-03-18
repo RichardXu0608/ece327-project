@@ -1,0 +1,82 @@
+DEBUG: ######################################################################
+DEBUG: # uw-synth: myflipflop.vhd
+DEBUG: ######################################################################
+DEBUG: GATE_MODE myflipflop.vhd
+DEBUG: args_to_proj: filename=myflipflop.vhd
+DEBUG: DESIGN_ENTITY 3 = myflipflop
+DEBUG: args_to_proj : 3 board: DE2
+DEBUG: args_to_proj : 4 board: DE2
+DEBUG: generics={  }
+DEBUG: done with args_to_proj
+DEBUG: set_tool_info: tool_key = LOGIC_SYNTH_TOOL, tool=PRECISION_RTL
+DEBUG: set_tool_info: k = LOGIC_SYNTH_EXT, d = edf
+DEBUG: dict_to_asn_aux: FAB_SIM_IP=altera_mf
+DEBUG: dict_to_asn_aux: PY_DESIGN_VHDL=[ "myflipflop.vhd" ]
+DEBUG: dict_to_asn_aux: PWR_TOOL=QUARTUS
+DEBUG: dict_to_asn_aux: USER_TOOL_FLAGS=
+DEBUG: dict_to_asn_aux: PART=EP2C35F672C
+DEBUG: dict_to_asn_aux: BOARD=DE2
+DEBUG: dict_to_asn_aux: DESIGN_ENTITY=myflipflop
+DEBUG: dict_to_asn_aux: FAMILY_SHORT=CycloneII
+DEBUG: dict_to_asn_aux: SH_DESIGN_VHDL=myflipflop.vhd
+DEBUG: dict_to_asn_aux: DESIGN_ARCH=
+DEBUG: dict_to_asn_aux: FREQ_MIN=50
+DEBUG: dict_to_asn_aux: ASIC=False
+DEBUG: dict_to_asn_aux: SIM_TOOL=MODELSIM
+DEBUG: dict_to_asn_aux: GENERICS={  }
+DEBUG: dict_to_asn_aux: ECE327=/home/ece327
+DEBUG: dict_to_asn_aux: LIB_VHDL=[]
+DEBUG: dict_to_asn_aux: SH_LIB_VHDL=
+DEBUG: dict_to_asn_aux: GOAL_FREQ=250
+DEBUG: dict_to_asn_aux: PHYS_SYNTH_TOOL=QUARTUS
+DEBUG: dict_to_asn_aux: RPT_DIR=RPT
+DEBUG: dict_to_asn_aux: FAB_SIM_HOME=/home/ece327/altera
+DEBUG: dict_to_asn_aux: LOGIC_SYNTH_EXT=edf
+DEBUG: dict_to_asn_aux: RPT_TDIR=RPT
+DEBUG: dict_to_asn_aux: FAMILY_LONG=Cyclone II
+DEBUG: dict_to_asn_aux: TCL_DESIGN_VHDL={ myflipflop.vhd }
+DEBUG: dict_to_asn_aux: DESIGN_VHDL=['myflipflop.vhd']
+DEBUG: dict_to_asn_aux: LOGIC_SYNTH_TOOL=PRECISION_RTL
+DEBUG: dict_to_asn_aux: UWP=myflipflop
+DEBUG: dict_to_asn_aux: LC_FAMILY_SHORT=cycloneii
+DEBUG: dict_to_asn_aux: PROG=uw-synth
+DEBUG: dict_to_asn_aux: TCL_LIB_VHDL={  }
+DEBUG: dict_to_asn_aux: SPEED=7
+DEBUG: dict_to_asn_aux: GUI_FLAG=-newgui
+DEBUG: dict_to_asn_aux: PY_LIB_VHDL=[]
+DEBUG: testing file myflipflop.vhd
+DEBUG: ( opening /home/ece327/skel/gate-synth-precision_rtl.py -> uw_tmp/uw-gate-synth-precision_rtl.py
+DEBUG: testing file /home/ece327/skel/gate-synth-precision_rtl.py
+DEBUG: ) closing /home/ece327/skel/gate-synth-precision_rtl.py -> uw_tmp/uw-gate-synth-precision_rtl.py
+DEBUG: ( opening /home/ece327/skel/gate-synth-precision_rtl.tcl -> uw_tmp/uw-gate-synth-precision_rtl.tcl
+DEBUG: testing file /home/ece327/skel/gate-synth-precision_rtl.tcl
+DEBUG: ) closing /home/ece327/skel/gate-synth-precision_rtl.tcl -> uw_tmp/uw-gate-synth-precision_rtl.tcl
+INFO: Starting PRECISION_RTL for logic synthesis
+DEBUG: testing file uw_tmp/uw-gate-synth-precision_rtl.py
+DEBUG: uw-synth: Exec my_rm( ["uw_tmp/*.xrf"] )
+DEBUG: ****************************** my_rm start: uw_tmp/*.xrf
+DEBUG: ***************************** my_rm name: uw_tmp/*.xrf
+DEBUG: uw-synth: Exec my_rm( [ "myflipflop_gate.vho" ] )
+DEBUG: ****************************** my_rm start: myflipflop_gate.vho
+DEBUG: ***************************** my_rm name: myflipflop_gate.vho
+DEBUG: *************************** my_rm glob result: myflipflop_gate.vho
+DEBUG: ************************* my_rm rm     : myflipflop_gate.vho
+DEBUG: uw-synth: Exec xsys( "precision -newgui -file uw_tmp/uw-gate-synth-precision_rtl.tcl" )
+DEBUG: Executing precision -newgui -file uw_tmp/uw-gate-synth-precision_rtl.tcl
+DEBUG: Command   precision
+precision: Executing on platform: CentOS release 5.10 (Final) Kernel \r on an \m  Linux ecelinux5.uwaterloo.ca 2.6.18-371.3.1.el5 #1 SMP Thu Dec 5 12:47:02 EST 2013 x86_64 x86_64 x86_64 GNU/Linux 
+precision: Setting MGC_HOME to /opt/Precision_Synthesis_2008a.47/Mgc_home ...
+
+DEBUG: uw-synth: Exec my_rm( [ "myflipflop_gate.xdb" ] )
+DEBUG: ****************************** my_rm start: myflipflop_gate.xdb
+DEBUG: ***************************** my_rm name: myflipflop_gate.xdb
+DEBUG: *************************** my_rm glob result: myflipflop_gate.xdb
+DEBUG: ************************* my_rm rm     : myflipflop_gate.xdb
+INFO: generic-gate synthesis         result written to myflipflop_gate.vho
+INFO: 
+INFO: ***********************************************
+INFO: *
+INFO: * uw-synth to DE2 was successful
+INFO: * log file stored in LOG/uw-synth.log
+INFO: *
+INFO: ***********************************************

@@ -1,0 +1,145 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_arith.all;
+use ieee.std_logic_unsigned.all;
+use ieee.numeric_unsigned."sll";
+
+package mypack0 is
+type in1ARRAY is array(2 downto 0) of std_logic;
+type qType is array(5 downto 0) of in1Array;
+type rType is array(5 downto 0) of in1Array;
+
+function to_std_logic_vector(in1 : in1ARRAY ) return std_logic_vector;
+function to_integer(in1 : in1ARRAY ) return integer;
+function "+" (in1 : in1ARRAY ; in2 : in1ARRAY) return in1ARRAY;
+
+end mypack0;
+
+package body mypack0 is
+function to_in1array(in1 : std_logic_vector ) return in1array is
+	variable result : in1array;
+	variable arg : std_logic_vector(in1'length-1 downto 0);
+begin
+	arg := in1;
+	for i in arg'range loop
+		result(i) := arg(i);
+	end loop;
+	return result;
+end to_in1array;
+
+function to_std_logic_vector(in1 : in1ARRAY ) return std_logic_vector is
+	variable result : std_logic_vector(in1'range);
+begin
+	for i in  in1'range loop
+		result(i) := in1(i);
+	end loop;
+	return result;
+end to_std_logic_vector;
+
+function to_integer(in1 : in1ARRAY ) return integer is
+begin
+	return CONV_INTEGER(to_std_logic_vector(in1));
+end to_integer;
+
+function "+" (in1 : in1ARRAY ; in2 : in1ARRAY) return in1ARRAY is
+	variable result : in1array;
+begin
+	result := to_in1array(to_std_logic_vector(in1) + to_std_logic_vector(in2));
+	return result;
+end "+";
+
+end mypack0;
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_arith.all;
+use ieee.std_logic_unsigned.all;
+use ieee.numeric_unsigned."sll";
+
+use work.mypack0.all;
+entity rtlcDiv_m_rtlsim_uns_mod_static_3_3_3_2 is
+	port (
+		in1_2 : in std_logic;
+		in1_1 : in std_logic;
+		in1_0 : in std_logic;
+
+		in2_1 : in std_logic;
+		in2_0 : in std_logic;
+
+		out_2 : out std_logic;
+		out_1 : out std_logic;
+		out_0 : out std_logic
+	 );
+
+end rtlcDiv_m_rtlsim_uns_mod_static_3_3_3_2;
+
+architecture rtlcDiv_m_rtlsim_uns_mod_static_3_3_3_2 of rtlcDiv_m_rtlsim_uns_mod_static_3_3_3_2 is
+
+
+begin
+
+P1 : process(
+in1_2 ,in1_1 ,in1_0 ,in2_1 , in2_0 )
+variable q : qType;
+variable r : rType;
+variable arg_quotient : std_logic_vector(2 downto 0);
+variable valuein2      : std_logic_vector(1 downto 0);
+variable valuein1     : std_logic_vector(2 downto 0);
+variable quotient : std_logic_vector(2 downto 0);
+variable start_pos : integer;
+variable write_pos : integer;
+variable partial_rSum : std_logic_vector(6 downto 0);
+variable i : integer := 0;
+begin
+arg_quotient := (others=>'0');
+quotient := (others=>'0');
+partial_rSum := (others=>'0');
+	valuein2 := ( '1' , '1' );
+	valuein1 := ( in1_2 ,in1_1 ,in1_0 );
+
+
+--calculating q and r for each term
+Loop2:
+for i in 0 to 2 loop
+	if valuein1(i) = '1' then
+		r(i) := in1Array(CONV_STD_LOGIC_VECTOR(CONV_INTEGER(("00000000000000000000000000000001" sll i)) rem CONV_INTEGER(valuein2), 3));
+	else
+		r(i) := "000" ;
+	end if;
+end loop Loop2;
+
+
+--Computing The Sum--
+Loop3:
+for i in 3 to 5 loop
+	r(i) := "000" ;
+end loop Loop3;
+start_pos := 0;
+write_pos := 3;
+
+Loop4:
+for i in 0 to 1 loop
+	r(write_pos) := r(start_pos) + r(start_pos+1);
+	start_pos := start_pos + 2;
+	write_pos := write_pos + 1;
+end loop Loop4;
+partial_rSum(2 downto 0) := to_std_logic_vector(r(write_pos-1));
+
+--Final Checks using if-endif--
+--Generating case st--
+
+i := 0;
+
+case  conv_integer(partial_rSum) is
+when  1| 4 => i := 1;
+when  2 => i := 2;
+when others => i := 0;
+end case;
+
+quotient := conv_std_logic_vector(i,3);
+
+arg_quotient := quotient;
+( out_2 ,out_1 ,out_0 ) <= arg_quotient(2 downto 0);
+
+end process;
+end rtlcDiv_m_rtlsim_uns_mod_static_3_3_3_2;

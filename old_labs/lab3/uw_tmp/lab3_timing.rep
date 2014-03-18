@@ -1,0 +1,116 @@
+                   Clock Frequency Report
+
+	Domain                  Clock Name                            Min Period (Freq)
+	------                  ----------                            -----------------
+	ClockDomain0            i_clock                               10.469 (95.520 MHz)  
+-- Device: Altera - Cyclone II : EP2C35F672C : 7
+-- CTE report summary..
+                  CTE Report Summary
+
+End CTE Report Summary ..... CPU Time Used: 0 sec.
+
+Setup Slack Path Summary
+
+               Data                                                                                      Data
+       Setup   Path   Source    Dest.                                                                    End 
+Index  Slack   Delay   Clock    Clock            Data Start Pin                    Data End Pin          Edge
+-----  ------  -----  -------  -------  ---------------------------------  ----------------------------  ----
+  1    -6.469  9.711  i_clock  i_clock  reg_i(1)/clk                       reg_out_o_output_obuf(7)/ena  Rise
+  2    -6.446  9.688  i_clock  i_clock  reg_i(0)/clk                       reg_out_o_output_obuf(7)/ena  Rise
+  3    -4.665  9.290  i_clock  i_clock  i_clock                            reg_out_o_output_obuf(7)/ena  Rise
+  4     0.073  3.169  i_clock  i_clock  modgen_counter_y_pos_reg_q(3)/clk  reg_out_o_output_obuf(7)/ena  Rise
+  5     0.076  3.166  i_clock  i_clock  modgen_counter_y_pos_reg_q(2)/clk  reg_out_o_output_obuf(7)/ena  Rise
+  6     0.256  2.986  i_clock  i_clock  modgen_counter_y_pos_reg_q(1)/clk  reg_out_o_output_obuf(7)/ena  Rise
+  7     0.705  2.537  i_clock  i_clock  reg_new_number_set/clk             reg_out_o_output_obuf(7)/ena  Rise
+  8     1.265  1.977  i_clock  i_clock  modgen_counter_x_pos_reg_q(1)/clk  reg_i(1)/ena                  Rise
+  9     1.268  1.974  i_clock  i_clock  modgen_counter_x_pos_reg_q(0)/clk  reg_i(1)/ena                  Rise
+ 10     1.897  1.345  i_clock  i_clock  modgen_counter_x_pos_reg_q(3)/clk  reg_i(1)/ena                  Rise
+
+-- Device: Altera - Cyclone II : EP2C35F672C : 7
+-- CTE report summary..
+                  CTE Report Summary
+
+Analyzing setup constraint violations 
+End CTE Report Summary ..... CPU Time Used: 0 sec.
+-- Device: Altera - Cyclone II : EP2C35F672C : 7
+-- CTE report timing..
+                  CTE Path Report
+
+
+Critical path #1, (path slack = -6.469):
+
+SOURCE CLOCK: name: i_clock period: 4.000000
+     Times are relative to the 1st rising edge
+  DEST CLOCK: name: i_clock period: 4.000000
+     Times are relative to the 2nd rising edge
+
+NAME                                             GATE                     DELAY    ARRIVAL DIR  FANOUT
+reg_i(1)/clk                                  cycloneii_lcell_ff                   0.000   up
+reg_i(1)/regout                               cycloneii_lcell_ff         0.000     0.000   up
+i(1)                                          (net)                      0.650                  34
+ix3163z52932/dataa                            cycloneii_lcell_comb                 0.650   up
+ix3163z52932/combout                          cycloneii_lcell_comb       0.545     1.195   up
+nx3163z11                                     (net)                      0.430                   9
+ix3163z52947/datab                            cycloneii_lcell_comb                 1.625   up
+ix3163z52947/combout                          cycloneii_lcell_comb       0.522     2.147   up
+nx3163z39                                     (net)                      0.270                   1
+ix3163z52946/datab                            cycloneii_lcell_comb                 2.417   up
+ix3163z52946/combout                          cycloneii_lcell_comb       0.522     2.939   up
+nx3163z37                                     (net)                      0.270                   1
+ix3163z30599/ix45949z52939/datab              cycloneii_lcell_comb                 3.209   up
+ix3163z30599/ix45949z52939/combout            cycloneii_lcell_comb       0.522     3.731   up
+ix3163z30599/nx37973z1                        (net)                      0.290                   2
+ix3163z60044/ix44952z52931/dataa              cycloneii_lcell_comb                 4.021   up
+ix3163z60044/ix44952z52931/cout               cycloneii_lcell_comb       0.517     4.538   up
+ix3163z60044/nx44952z22                       (net)                *     0.000                   1
+ix3163z60044/ix44952z52930/cin                cycloneii_lcell_comb                 4.538   up
+ix3163z60044/ix44952z52930/cout               cycloneii_lcell_comb       0.080     4.618   up
+ix3163z60044/nx44952z19                       (net)                *     0.000                   1
+ix3163z60044/ix44952z52929/cin                cycloneii_lcell_comb                 4.618   up
+ix3163z60044/ix44952z52929/cout               cycloneii_lcell_comb       0.080     4.698   up
+ix3163z60044/nx44952z16                       (net)                *     0.000                   1
+ix3163z60044/ix44952z52928/cin                cycloneii_lcell_comb                 4.698   up
+ix3163z60044/ix44952z52928/cout               cycloneii_lcell_comb       0.080     4.778   up
+ix3163z60044/nx44952z13                       (net)                *     0.000                   1
+ix3163z60044/ix44952z52927/cin                cycloneii_lcell_comb                 4.778   up
+ix3163z60044/ix44952z52927/cout               cycloneii_lcell_comb       0.080     4.858   up
+ix3163z60044/nx44952z10                       (net)                *     0.000                   1
+ix3163z60044/ix44952z52926/cin                cycloneii_lcell_comb                 4.858   up
+ix3163z60044/ix44952z52926/cout               cycloneii_lcell_comb       0.080     4.938   up
+ix3163z60044/nx44952z7                        (net)                *     0.000                   1
+ix3163z60044/ix44952z52925/cin                cycloneii_lcell_comb                 4.938   up
+ix3163z60044/ix44952z52925/cout               cycloneii_lcell_comb       0.080     5.018   up
+ix3163z60044/nx44952z4                        (net)                *     0.000                   1
+ix3163z60044/ix44952z52923/cin                cycloneii_lcell_comb                 5.018   up
+ix3163z60044/ix44952z52923/combout            cycloneii_lcell_comb       0.000     5.018   up
+ix3163z60044/nx44952z1                        (net)                *     0.270                   1
+ix3163z52958/dataa                            cycloneii_lcell_comb                 5.288   up
+ix3163z52958/combout                          cycloneii_lcell_comb       0.545     5.833   up
+nx3163z58                                     (net)                *     0.270                   1
+ix3163z52957/datac                            cycloneii_lcell_comb                 6.103   up
+ix3163z52957/combout                          cycloneii_lcell_comb       0.322     6.425   up
+nx3163z57                                     (net)                *     0.270                   1
+ix3163z52924/datab                            cycloneii_lcell_comb                 6.695   up
+ix3163z52924/combout                          cycloneii_lcell_comb       0.522     7.217   up
+nx3163z3                                      (net)                *     0.290                   2
+ix3163z52965/datab                            cycloneii_lcell_comb                 7.507   up
+ix3163z52965/combout                          cycloneii_lcell_comb       0.522     8.029   up
+nx3163z76                                     (net)                *     0.590                  17
+modgen_counter_o_output/ix58250z52923/datab   cycloneii_lcell_comb                 8.619   up
+modgen_counter_o_output/ix58250z52923/combout cycloneii_lcell_comb       0.522     9.141   up
+modgen_counter_o_output/nx58250z2             (net)                *     0.570                  16
+reg_out_o_output_obuf(7)/ena                  cycloneii_lcell_ff                   9.711   up
+
+		Initial edge separation:      4.000
+		Source clock delay:      -    1.383
+		Dest clock delay:        +    1.383
+		                        -----------
+		Edge separation:              4.000
+		Setup constraint:        -    0.758
+		                        -----------
+		Data required time:           3.242
+		Data arrival time:       -    9.711   ( 57.06% cell delay, 42.94% net delay )
+		                        -----------
+		Slack (VIOLATED):            -6.469
+
+End CTE Analysis ..... CPU Time Used: 0 sec.

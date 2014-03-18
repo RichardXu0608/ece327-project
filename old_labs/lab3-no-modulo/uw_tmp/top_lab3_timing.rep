@@ -1,0 +1,119 @@
+                   Clock Frequency Report
+
+	Domain                  Clock Name                            Min Period (Freq)
+	------                  ----------                            -----------------
+	ClockDomain0            clk                                   9.420 (106.157 MHz)  
+-- Device: Altera - Cyclone II : EP2C35F672C : 7
+-- CTE report summary..
+                  CTE Report Summary
+
+End CTE Report Summary ..... CPU Time Used: 0 sec.
+
+Setup Slack Path Summary
+
+               Data                                                                                            Data
+       Setup   Path   Source  Dest.                                                                            End 
+Index  Slack   Delay  Clock   Clock        Data Start Pin                        Data End Pin                  Edge
+-----  ------  -----  ------  -----  ---------------------------  -------------------------------------------  ----
+  1    -5.420  8.662  clk     clk    u_lab3/reg_i(2)/clk          u_lab3/modgen_counter_o_output/reg_q(7)/ena  Rise
+  2    -5.397  8.639  clk     clk    u_lab3/reg_i(1)/clk          u_lab3/modgen_counter_o_output/reg_q(7)/ena  Rise
+  3    -5.326  8.568  clk     clk    u_uw_uart/reg_CharAvail/clk  u_lab3/modgen_counter_o_output/reg_q(7)/ena  Rise
+  4    -5.257  8.499  clk     clk    u_lab3/reg_i(0)/clk          u_lab3/modgen_counter_o_output/reg_q(7)/ena  Rise
+  5    -4.943  8.185  clk     clk    u_uw_uart/reg_RData(0)/clk   u_lab3/modgen_counter_o_output/reg_q(7)/ena  Rise
+  6    -4.761  8.003  clk     clk    u_uw_uart/reg_RData(1)/clk   u_lab3/modgen_counter_o_output/reg_q(7)/ena  Rise
+  7    -4.681  7.923  clk     clk    u_uw_uart/reg_RData(2)/clk   u_lab3/modgen_counter_o_output/reg_q(7)/ena  Rise
+  8    -4.601  7.843  clk     clk    u_uw_uart/reg_RData(3)/clk   u_lab3/modgen_counter_o_output/reg_q(7)/ena  Rise
+  9    -4.521  7.763  clk     clk    u_uw_uart/reg_RData(4)/clk   u_lab3/modgen_counter_o_output/reg_q(7)/ena  Rise
+ 10    -4.441  7.683  clk     clk    u_uw_uart/reg_RData(5)/clk   u_lab3/modgen_counter_o_output/reg_q(7)/ena  Rise
+
+-- Device: Altera - Cyclone II : EP2C35F672C : 7
+-- CTE report summary..
+                  CTE Report Summary
+
+Analyzing setup constraint violations 
+End CTE Report Summary ..... CPU Time Used: 0 sec.
+-- Device: Altera - Cyclone II : EP2C35F672C : 7
+-- CTE report timing..
+                  CTE Path Report
+
+
+Critical path #1, (path slack = -5.420):
+
+SOURCE CLOCK: name: clk period: 4.000000
+     Times are relative to the 1st rising edge
+  DEST CLOCK: name: clk period: 4.000000
+     Times are relative to the 2nd rising edge
+
+NAME                                                    GATE                     DELAY    ARRIVAL DIR  FANOUT
+u_lab3/reg_i(2)/clk                                  cycloneii_lcell_ff                   0.000   up
+u_lab3/reg_i(2)/regout                               cycloneii_lcell_ff         0.000     0.000   up
+u_lab3/i(2)                                          (net)                      0.510                  13
+u_lab3/ix54113z52923/dataa                           cycloneii_lcell_comb                 0.510   up
+u_lab3/ix54113z52923/combout                         cycloneii_lcell_comb       0.545     1.055   up
+u_lab3/nx54113z1                                     (net)                      0.610                  18
+u_lab3/ix3163z52946/datab                            cycloneii_lcell_comb                 1.665   up
+u_lab3/ix3163z52946/combout                          cycloneii_lcell_comb       0.522     2.187   up
+u_lab3/nx3163z38                                     (net)                      0.270                   1
+u_lab3/ix3163z52945/dataa                            cycloneii_lcell_comb                 2.457   up
+u_lab3/ix3163z52945/combout                          cycloneii_lcell_comb       0.545     3.002   up
+u_lab3/nx3163z37                                     (net)                      0.270                   1
+u_lab3/ix3163z30602/ix45949z52939/datab              cycloneii_lcell_comb                 3.272   up
+u_lab3/ix3163z30602/ix45949z52939/combout            cycloneii_lcell_comb       0.522     3.794   up
+u_lab3/ix3163z30602/nx37973z1                        (net)                      0.290                   2
+u_lab3/ix3163z60014/ix44952z52932/dataa              cycloneii_lcell_comb                 4.084   up
+u_lab3/ix3163z60014/ix44952z52932/cout               cycloneii_lcell_comb       0.517     4.601   up
+u_lab3/ix3163z60014/nx44952z23                       (net)                *     0.000                   1
+u_lab3/ix3163z60014/ix44952z52931/cin                cycloneii_lcell_comb                 4.601   up
+u_lab3/ix3163z60014/ix44952z52931/cout               cycloneii_lcell_comb       0.080     4.681   up
+u_lab3/ix3163z60014/nx44952z22                       (net)                *     0.000                   1
+u_lab3/ix3163z60014/ix44952z52930/cin                cycloneii_lcell_comb                 4.681   up
+u_lab3/ix3163z60014/ix44952z52930/cout               cycloneii_lcell_comb       0.080     4.761   up
+u_lab3/ix3163z60014/nx44952z19                       (net)                *     0.000                   1
+u_lab3/ix3163z60014/ix44952z52929/cin                cycloneii_lcell_comb                 4.761   up
+u_lab3/ix3163z60014/ix44952z52929/cout               cycloneii_lcell_comb       0.080     4.841   up
+u_lab3/ix3163z60014/nx44952z16                       (net)                *     0.000                   1
+u_lab3/ix3163z60014/ix44952z52928/cin                cycloneii_lcell_comb                 4.841   up
+u_lab3/ix3163z60014/ix44952z52928/cout               cycloneii_lcell_comb       0.080     4.921   up
+u_lab3/ix3163z60014/nx44952z13                       (net)                *     0.000                   1
+u_lab3/ix3163z60014/ix44952z52927/cin                cycloneii_lcell_comb                 4.921   up
+u_lab3/ix3163z60014/ix44952z52927/cout               cycloneii_lcell_comb       0.080     5.001   up
+u_lab3/ix3163z60014/nx44952z10                       (net)                *     0.000                   1
+u_lab3/ix3163z60014/ix44952z52926/cin                cycloneii_lcell_comb                 5.001   up
+u_lab3/ix3163z60014/ix44952z52926/cout               cycloneii_lcell_comb       0.080     5.081   up
+u_lab3/ix3163z60014/nx44952z7                        (net)                *     0.000                   1
+u_lab3/ix3163z60014/ix44952z52925/cin                cycloneii_lcell_comb                 5.081   up
+u_lab3/ix3163z60014/ix44952z52925/cout               cycloneii_lcell_comb       0.080     5.161   up
+u_lab3/ix3163z60014/nx44952z4                        (net)                *     0.000                   1
+u_lab3/ix3163z60014/ix44952z52923/cin                cycloneii_lcell_comb                 5.161   up
+u_lab3/ix3163z60014/ix44952z52923/cout               cycloneii_lcell_comb       0.080     5.241   up
+u_lab3/ix3163z60014/nx23445z2                        (net)                *     0.000                   1
+u_lab3/ix3163z60014/ix23445z52923/cin                cycloneii_lcell_comb                 5.241   up
+u_lab3/ix3163z60014/ix23445z52923/combout            cycloneii_lcell_comb       0.000     5.241   up
+u_lab3/ix3163z60014/nx23445z1                        (net)                *     0.270                   1
+u_lab3/ix3163z52927/datab                            cycloneii_lcell_comb                 5.511   up
+u_lab3/ix3163z52927/combout                          cycloneii_lcell_comb       0.522     6.033   up
+u_lab3/nx3163z5                                      (net)                *     0.290                   2
+u_lab3/ix3163z52924/datac                            cycloneii_lcell_comb                 6.323   up
+u_lab3/ix3163z52924/combout                          cycloneii_lcell_comb       0.322     6.645   up
+u_lab3/nx3163z2                                      (net)                *     0.270                   1
+u_lab3/ix3163z52923/datab                            cycloneii_lcell_comb                 6.915   up
+u_lab3/ix3163z52923/combout                          cycloneii_lcell_comb       0.522     7.437   up
+u_lab3/nx3163z1                                      (net)                *     0.270                   1
+u_lab3/modgen_counter_o_output/ix57253z52923/dataa   cycloneii_lcell_comb                 7.707   up
+u_lab3/modgen_counter_o_output/ix57253z52923/combout cycloneii_lcell_comb       0.545     8.252   up
+u_lab3/modgen_counter_o_output/nx57253z3             (net)                *     0.410                   8
+u_lab3/modgen_counter_o_output/reg_q(7)/ena          cycloneii_lcell_ff                   8.662   up
+
+		Initial edge separation:      4.000
+		Source clock delay:      -    1.383
+		Dest clock delay:        +    1.383
+		                        -----------
+		Edge separation:              4.000
+		Setup constraint:        -    0.758
+		                        -----------
+		Data required time:           3.242
+		Data arrival time:       -    8.662   ( 60.06% cell delay, 39.94% net delay )
+		                        -----------
+		Slack (VIOLATED):            -5.420
+
+End CTE Analysis ..... CPU Time Used: 0 sec.

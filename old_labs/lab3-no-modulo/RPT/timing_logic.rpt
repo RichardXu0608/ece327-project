@@ -1,0 +1,24 @@
+                   Clock Frequency Report
+
+	Domain                  Clock Name                            Min Period (Freq)
+	------                  ----------                            -----------------
+	ClockDomain0            i_clock                               9.518 (105.064 MHz)  
+
+Setup Slack Path Summary
+
+               Data                                                                 Data
+       Setup   Path   Source    Dest.    Data Start                                 End 
+Index  Slack   Delay   Clock    Clock       Pin               Data End Pin          Edge
+-----  ------  -----  -------  -------  ------------  ----------------------------  ----
+  1    -5.518  8.760  i_clock  i_clock  reg_i(2)/clk  reg_out_o_output_obuf(7)/ena  Rise
+  2    -5.495  8.737  i_clock  i_clock  reg_i(1)/clk  reg_out_o_output_obuf(7)/ena  Rise
+  3    -5.355  8.597  i_clock  i_clock  reg_i(0)/clk  reg_out_o_output_obuf(7)/ena  Rise
+  4    -3.674  8.299  i_clock  i_clock  i_clock       reg_out_o_output_obuf(7)/ena  Rise
+  5    -3.231  7.856  i_clock  i_clock  i_input(0)    reg_out_o_output_obuf(7)/ena  Rise
+
+-- Device: Altera - Cyclone II : EP2C35F672C : 7
+-- CTE report summary..
+                  CTE Report Summary
+
+Analyzing setup constraint violations 
+End CTE Report Summary ..... CPU Time Used: 0 sec.

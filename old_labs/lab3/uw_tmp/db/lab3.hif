@@ -1,0 +1,584 @@
+Quartus II
+Version 10.1 Build 197 01/19/2011 Service Pack 1 SJ Full Version
+14
+4554
+OFF
+OFF
+OFF
+ON
+ON
+ON
+FV_OFF
+Level2
+0
+0
+VRSM_ON
+VHSM_ON
+0
+-- Start Library Paths --
+-- End Library Paths --
+-- Start VHDL Libraries --
+-- End VHDL Libraries --
+# entity
+lab3
+# storage
+db|lab3.(0).cnf
+db|lab3.(0).cnf
+# case_insensitive
+# source_file
+lab3_logic.edf
+e8ed5b5036c5ac43ab956b75df572ed4
+10
+# hierarchies {
+|
+}
+# macro_sequence
+
+# end
+# entity
+sub_8_0
+# storage
+db|lab3.(1).cnf
+db|lab3.(1).cnf
+# case_insensitive
+# source_file
+lab3_logic.edf
+e8ed5b5036c5ac43ab956b75df572ed4
+10
+# hierarchies {
+sub_8_0:ix3163z19324
+}
+# macro_sequence
+
+# end
+# entity
+sub_8_1
+# storage
+db|lab3.(2).cnf
+db|lab3.(2).cnf
+# case_insensitive
+# source_file
+lab3_logic.edf
+e8ed5b5036c5ac43ab956b75df572ed4
+10
+# hierarchies {
+sub_8_1:ix3163z19326
+}
+# macro_sequence
+
+# end
+# entity
+addsub_9_0
+# storage
+db|lab3.(3).cnf
+db|lab3.(3).cnf
+# case_insensitive
+# source_file
+lab3_logic.edf
+e8ed5b5036c5ac43ab956b75df572ed4
+10
+# hierarchies {
+addsub_9_0:ix3163z30599
+}
+# macro_sequence
+
+# end
+# entity
+add_8_0
+# storage
+db|lab3.(4).cnf
+db|lab3.(4).cnf
+# case_insensitive
+# source_file
+lab3_logic.edf
+e8ed5b5036c5ac43ab956b75df572ed4
+10
+# hierarchies {
+add_8_0:ix3163z60044
+}
+# macro_sequence
+
+# end
+# entity
+ram_dq_8_0
+# storage
+db|lab3.(5).cnf
+db|lab3.(5).cnf
+# case_insensitive
+# source_file
+lab3_logic.edf
+e8ed5b5036c5ac43ab956b75df572ed4
+10
+# hierarchies {
+ram_dq_8_0:mem
+}
+# macro_sequence
+
+# end
+# entity
+altsyncram
+# storage
+db|lab3.(6).cnf
+db|lab3.(6).cnf
+# case_insensitive
+# source_file
+c:|software|altera|10.1|quartus|libraries|megafunctions|altsyncram.tdf
+8dfe23324554fd33374fa9f122ad8d4
+7
+# user_parameter {
+BYTE_SIZE_BLOCK
+8
+PARAMETER_UNKNOWN
+DEF
+AUTO_CARRY_CHAINS
+ON
+AUTO_CARRY
+USR
+IGNORE_CARRY_BUFFERS
+OFF
+IGNORE_CARRY
+USR
+AUTO_CASCADE_CHAINS
+ON
+AUTO_CASCADE
+USR
+IGNORE_CASCADE_BUFFERS
+OFF
+IGNORE_CASCADE
+USR
+WIDTH_BYTEENA
+1
+PARAMETER_UNKNOWN
+DEF
+OPERATION_MODE
+DUAL_PORT
+PARAMETER_UNKNOWN
+USR
+WIDTH_A
+8
+PARAMETER_UNKNOWN
+USR
+WIDTHAD_A
+4
+PARAMETER_UNKNOWN
+USR
+NUMWORDS_A
+16
+PARAMETER_UNKNOWN
+USR
+OUTDATA_REG_A
+UNREGISTERED
+PARAMETER_UNKNOWN
+USR
+ADDRESS_ACLR_A
+NONE
+PARAMETER_UNKNOWN
+USR
+OUTDATA_ACLR_A
+NONE
+PARAMETER_UNKNOWN
+USR
+WRCONTROL_ACLR_A
+NONE
+PARAMETER_UNKNOWN
+USR
+INDATA_ACLR_A
+NONE
+PARAMETER_UNKNOWN
+USR
+BYTEENA_ACLR_A
+NONE
+PARAMETER_UNKNOWN
+USR
+WIDTH_B
+8
+PARAMETER_UNKNOWN
+USR
+WIDTHAD_B
+4
+PARAMETER_UNKNOWN
+USR
+NUMWORDS_B
+16
+PARAMETER_UNKNOWN
+USR
+INDATA_REG_B
+CLOCK1
+PARAMETER_UNKNOWN
+USR
+WRCONTROL_WRADDRESS_REG_B
+CLOCK1
+PARAMETER_UNKNOWN
+USR
+RDCONTROL_REG_B
+CLOCK1
+PARAMETER_UNKNOWN
+USR
+ADDRESS_REG_B
+CLOCK1
+PARAMETER_UNKNOWN
+USR
+OUTDATA_REG_B
+UNREGISTERED
+PARAMETER_UNKNOWN
+USR
+BYTEENA_REG_B
+CLOCK1
+PARAMETER_UNKNOWN
+USR
+INDATA_ACLR_B
+NONE
+PARAMETER_UNKNOWN
+USR
+WRCONTROL_ACLR_B
+NONE
+PARAMETER_UNKNOWN
+USR
+ADDRESS_ACLR_B
+NONE
+PARAMETER_UNKNOWN
+USR
+OUTDATA_ACLR_B
+NONE
+PARAMETER_UNKNOWN
+USR
+RDCONTROL_ACLR_B
+NONE
+PARAMETER_UNKNOWN
+USR
+BYTEENA_ACLR_B
+NONE
+PARAMETER_UNKNOWN
+USR
+WIDTH_BYTEENA_A
+1
+PARAMETER_UNKNOWN
+USR
+WIDTH_BYTEENA_B
+1
+PARAMETER_UNKNOWN
+USR
+RAM_BLOCK_TYPE
+AUTO
+PARAMETER_UNKNOWN
+USR
+BYTE_SIZE
+8
+PARAMETER_UNKNOWN
+USR
+READ_DURING_WRITE_MODE_MIXED_PORTS
+OLD_DATA
+PARAMETER_UNKNOWN
+USR
+READ_DURING_WRITE_MODE_PORT_A
+NEW_DATA_NO_NBE_READ
+PARAMETER_UNKNOWN
+DEF
+READ_DURING_WRITE_MODE_PORT_B
+NEW_DATA_NO_NBE_READ
+PARAMETER_UNKNOWN
+DEF
+INIT_FILE
+UNUSED
+PARAMETER_UNKNOWN
+DEF
+INIT_FILE_LAYOUT
+PORT_A
+PARAMETER_UNKNOWN
+DEF
+MAXIMUM_DEPTH
+0
+PARAMETER_UNKNOWN
+USR
+CLOCK_ENABLE_INPUT_A
+NORMAL
+PARAMETER_UNKNOWN
+DEF
+CLOCK_ENABLE_INPUT_B
+NORMAL
+PARAMETER_UNKNOWN
+DEF
+CLOCK_ENABLE_OUTPUT_A
+NORMAL
+PARAMETER_UNKNOWN
+DEF
+CLOCK_ENABLE_OUTPUT_B
+NORMAL
+PARAMETER_UNKNOWN
+DEF
+CLOCK_ENABLE_CORE_A
+USE_INPUT_CLKEN
+PARAMETER_UNKNOWN
+DEF
+CLOCK_ENABLE_CORE_B
+USE_INPUT_CLKEN
+PARAMETER_UNKNOWN
+DEF
+ENABLE_ECC
+FALSE
+PARAMETER_UNKNOWN
+DEF
+WIDTH_ECCSTATUS
+3
+PARAMETER_UNKNOWN
+DEF
+DEVICE_FAMILY
+Cyclone II
+PARAMETER_UNKNOWN
+USR
+CBXI_PARAMETER
+altsyncram_hsh2
+PARAMETER_UNKNOWN
+USR
+}
+# used_port {
+wren_a
+-1
+3
+q_b7
+-1
+3
+q_b6
+-1
+3
+q_b5
+-1
+3
+q_b4
+-1
+3
+q_b3
+-1
+3
+q_b2
+-1
+3
+q_b1
+-1
+3
+q_b0
+-1
+3
+data_a7
+-1
+3
+data_a6
+-1
+3
+data_a5
+-1
+3
+data_a4
+-1
+3
+data_a3
+-1
+3
+data_a2
+-1
+3
+data_a1
+-1
+3
+data_a0
+-1
+3
+clock1
+-1
+3
+clock0
+-1
+3
+address_b3
+-1
+3
+address_b2
+-1
+3
+address_b1
+-1
+3
+address_b0
+-1
+3
+address_a3
+-1
+3
+address_a2
+-1
+3
+address_a1
+-1
+3
+address_a0
+-1
+3
+rden_b
+-1
+2
+clocken1
+-1
+2
+clocken0
+-1
+2
+}
+# hierarchies {
+ram_dq_8_0:mem|altsyncram:ix64056z44883
+ram_dq_8_1:mem_0|altsyncram:ix64056z44884
+ram_dq_8_2:mem_1|altsyncram:ix64056z44885
+}
+# macro_sequence
+
+# end
+# entity
+altsyncram_hsh2
+# storage
+db|lab3.(7).cnf
+db|lab3.(7).cnf
+# case_insensitive
+# source_file
+db|altsyncram_hsh2.tdf
+66d9e7449167ba9726f6b243e7cabb
+7
+# used_port {
+wren_a
+-1
+3
+q_b7
+-1
+3
+q_b6
+-1
+3
+q_b5
+-1
+3
+q_b4
+-1
+3
+q_b3
+-1
+3
+q_b2
+-1
+3
+q_b1
+-1
+3
+q_b0
+-1
+3
+data_a7
+-1
+3
+data_a6
+-1
+3
+data_a5
+-1
+3
+data_a4
+-1
+3
+data_a3
+-1
+3
+data_a2
+-1
+3
+data_a1
+-1
+3
+data_a0
+-1
+3
+clock1
+-1
+3
+clock0
+-1
+3
+address_b3
+-1
+3
+address_b2
+-1
+3
+address_b1
+-1
+3
+address_b0
+-1
+3
+address_a3
+-1
+3
+address_a2
+-1
+3
+address_a1
+-1
+3
+address_a0
+-1
+3
+}
+# hierarchies {
+ram_dq_8_0:mem|altsyncram:ix64056z44883|altsyncram_hsh2:auto_generated
+ram_dq_8_1:mem_0|altsyncram:ix64056z44884|altsyncram_hsh2:auto_generated
+ram_dq_8_2:mem_1|altsyncram:ix64056z44885|altsyncram_hsh2:auto_generated
+}
+# macro_sequence
+
+# end
+# entity
+ram_dq_8_1
+# storage
+db|lab3.(8).cnf
+db|lab3.(8).cnf
+# case_insensitive
+# source_file
+lab3_logic.edf
+e8ed5b5036c5ac43ab956b75df572ed4
+10
+# hierarchies {
+ram_dq_8_1:mem_0
+}
+# macro_sequence
+
+# end
+# entity
+ram_dq_8_2
+# storage
+db|lab3.(9).cnf
+db|lab3.(9).cnf
+# case_insensitive
+# source_file
+lab3_logic.edf
+e8ed5b5036c5ac43ab956b75df572ed4
+10
+# hierarchies {
+ram_dq_8_2:mem_1
+}
+# macro_sequence
+
+# end
+# entity
+modgen_counter_8_0
+# storage
+db|lab3.(10).cnf
+db|lab3.(10).cnf
+# case_insensitive
+# source_file
+lab3_logic.edf
+e8ed5b5036c5ac43ab956b75df572ed4
+10
+# hierarchies {
+modgen_counter_8_0:modgen_counter_o_output
+}
+# macro_sequence
+
+# end
+# complete
+

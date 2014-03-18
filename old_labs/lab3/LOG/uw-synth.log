@@ -1,0 +1,10 @@
+INFO: Starting PRECISION_RTL for logic synthesis
+INFO: generic-gate       netlist         written to uw_tmp/lab3_gate.vhd
+INFO: generic-gate       area estimate   written to RPT/area_gate.rpt
+INFO: 
+INFO: ***********************************************
+INFO: *
+INFO: * uw-synth to DE2 was successful
+INFO: * log file stored in LOG/uw-synth.log
+INFO: *
+INFO: ***********************************************
