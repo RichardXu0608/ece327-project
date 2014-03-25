@@ -58,15 +58,28 @@ architecture main of kirsch is
     signal h          : unsigned(7 downto 0) := to_unsigned(0, 8);
     signal i          : unsigned(7 downto 0) := to_unsigned(0, 8);
     
-    signal a_2        : unsigned(7 downto 0) := to_unsigned(0, 8);
-    signal b_2        : unsigned(7 downto 0) := to_unsigned(0, 8);
-    signal c_2        : unsigned(7 downto 0) := to_unsigned(0, 8);
-    signal d_2        : unsigned(7 downto 0) := to_unsigned(0, 8);
-    signal e_2        : unsigned(7 downto 0) := to_unsigned(0, 8);
-    signal f_2        : unsigned(7 downto 0) := to_unsigned(0, 8);
-    signal g_2        : unsigned(7 downto 0) := to_unsigned(0, 8);
-    signal h_2        : unsigned(7 downto 0) := to_unsigned(0, 8);
-    signal i_2        : unsigned(7 downto 0) := to_unsigned(0, 8);
+    signal TMP1       : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP2       : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP3       : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP4       : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP5       : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP6       : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP7       : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP8       : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP9       : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP10      : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP11      : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP12      : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP13      : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP14      : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP15      : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP16      : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP17      : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP18      : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP19      : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP20      : unsigned(11 downto 0) := to_unsigned(0, 12);
+    
+     signal i2_valid  : std_logic             := '0';
     
     signal mem_1_wren : std_logic;
     signal mem_1_q    : std_logic_vector(7 downto 0);
@@ -76,6 +89,7 @@ architecture main of kirsch is
 
     signal mem_3_wren : std_logic;
     signal mem_3_q    : std_logic_vector(7 downto 0);
+
 begin  
     --instantiate the 3 instances of the memory module
     mem1 : entity work.mem(main)
@@ -169,30 +183,27 @@ begin
             
             if(y_pos >= 2 AND x_pos >= 3) then -- We can start processing data: x_pos is >=3 here because we increment x_pos before getting here
                 
-                -- TMP1 = B + C
-                -- TMP2 = MAX A, D
-                -- TMP3 = F + G
+                TMP1 <= b + c;
+                TMP2 <= MAX(A, D);
+                TMP3 <= f + g;
                 
                 wait for rising_edge(i_clock); --Second clock boundary
                 
-                -- TMP4 = TMP1 + TMP2
-                -- TMP5 = MAX E, H
-                -- TMP6 = D + E
+                TMP4 <= TMP1 + TMP2;
+                TMP5 <= MAX(E, H);
+                TMP6 <= d + e;
                 
                 wait for rising_edge(i_clock); --Third clock boundary
                 
-                -- TMP7 = TMP5 + TMP3
-                -- TMP8 = MAX C, F
-                -- TMP9 = H + A
+                TMP7 <= TMP5 + TMP3;
+                TMP8 <= MAX(C, F);
+                TMP9 <= h + a;
                 
                 wait for rising_edge(i_clock); --Fourth clock boundary
                 
-                -- TMP10 = TMP8 + TMP6
-                -- TMP11 = MAX G, B
-                -- TMP12 = TMP1 + TMP6   <- B + C + D + E
-                
-                --Assign the second-stage registers here, no sense waiting any longer
-                a_2 <= a;
+                TMP10 <= TMP8 + TMP6;
+                TMP11 <= MAX(g, b);
+                TMP12 <= TMP1 + TMP6;   --  <- B + C + D + E
                 
             end if;
         end if;
