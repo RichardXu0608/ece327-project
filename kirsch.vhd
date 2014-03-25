@@ -64,40 +64,27 @@ architecture main of kirsch is
 
     signal v          : std_logic_vector(8 downto 0) := "000000000";
     
-    signal a          : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal b          : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal c          : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal d          : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal e          : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal f          : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal g          : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal h          : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal i          : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal a, b, c, d, e, f, g, h, i   : unsigned(11 downto 0) := to_unsigned(0, 12);
     
-    signal TMP1       : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP2       : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP3       : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP4       : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP5       : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP6       : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP7       : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP8       : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP9       : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP10      : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP11      : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP12      : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP13      : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP14      : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP15      : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP16      : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP17      : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP18      : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP19      : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP20      : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP1, TMP2, TMP3, TMP4      : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP5, TMP6, TMP7, TMP8      : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP9, TMP10, TMP11, TMP12   : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP13, TMP14, TMP15, TMP16  : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP17, TMP18, TMP19, TMP20  : unsigned(11 downto 0) := to_unsigned(0, 12);
+	signal TMP21, TMP3_2, TMP4_2       : unsigned(11 downto 0) := to_unsigned(0, 12);
+	signal TMP5_2, TMP7_2, TMP9_2      : unsigned(11 downto 0) := to_unsigned(0, 12);
+	signal TMP10_2, TMP11_2, TMP12_2   : unsigned(11 downto 0) := to_unsigned(0, 12);
 	
-	signal max_in1    : std_logic_vector(11 downto 0);
-	signal max_in2    : std_logic_vector(11 downto 0);
-	signal max_out    : std_logic_vector(11 downto 0);
+	signal max1_in1   : std_logic_vector(11 downto 0);
+	signal max1_in2   : std_logic_vector(11 downto 0);
+	signal max1_out   : std_logic_vector(11 downto 0);
+	
+	signal max2_in1   : std_logic_vector(11 downto 0);
+	signal max2_in2   : std_logic_vector(11 downto 0);
+	signal max2_out   : std_logic_vector(11 downto 0);
+	
+	signal edge_1     : std_logic_vector(2 downto 0);
+	signal edge_2     : std_logic_vector(2 downto 0);
 	
 	signal curr_mode  : std_logic_vector(1 downto 0) := "00";
     
@@ -141,11 +128,18 @@ begin
        q       => mem_3_q
     );
 	
-	MAX : entity work.max(main)
+	MAX1 : entity work.max(main)
 	 port map (
-	     i_input0  => max_in1,
-		 i_input1  => max_in2,
-		 o_output  => max_out
+	     i_input0  => max1_in1,
+		 i_input1  => max1_in2,
+		 o_output  => max1_out
+	 );
+	 
+	MAX2 : entity work.max(main)
+	 port map (
+	     i_input0  => max2_in1,
+		 i_input1  => max2_in2,
+		 o_output  => max2_out
 	 );
     
     -- Calculate the mem_x_wren signals
@@ -161,7 +155,7 @@ begin
 	 o_mode <= "10" when "000000000",
 			   "11" when others;	
 
-	o_valid <= '1' when ((y_pos >= 3) AND (x_pos >= 3) AND (v(8) = '1'))
+	o_valid <= '1' when ((((y_pos >= 2) AND (x_pos >= 3)) OR (y_pos >= 3)) AND (v(8) = '1'))
 	      else '0';  
 			   		   
     -- Valid bit generator
@@ -172,10 +166,6 @@ begin
             v(i) <= v(i-1);
         end process;
     end generate;
-    
-	--Debug LEDs
-	
-	debug_led_red  <= "000000" & std_logic_vector(e);
 	
     -- Stage 1 pipeline
     --     This pipeline needs to clock the data into the x_2 registers before exiting
@@ -230,58 +220,97 @@ begin
         if(y_pos >= 2 AND x_pos >= 3 AND v(1) = '1') then -- We can start processing data: x_pos is >=3 here because we increment x_pos before getting here
             TMP1 <= b + c;
 			
-			max_in1 <= std_logic_vector(a);
-			max_in2 <= std_logic_vector(d);
-            TMP2 <= unsigned(max_out);
+			max1_in1 <= std_logic_vector(a);
+			max1_in2 <= std_logic_vector(d);
+            TMP2 <= unsigned(max1_out);
 			
             TMP3 <= f + g;
         end if;
 
         if v(2) = '1' then
             TMP4 <= TMP1 + TMP2;
-            --TMP5 <= MAX(e, h);
+			
+			max1_in1 <= std_logic_vector(e);
+			max1_in2 <= std_logic_vector(h);
+            TMP5 <= unsigned(max1_out);
+			
             TMP6 <= d + e;
         end if;    
         
         if v(3) = '1' then    
             TMP7 <= TMP5 + TMP3;
-            --TMP8 <= MAX(c, f);
+			
+			max1_in1 <= std_logic_vector(c);
+			max1_in2 <= std_logic_vector(f);
+            TMP8 <= unsigned(max1_out);
+
             TMP9 <= h + a;
         end if;    
             
         if v(4) = '1' then
             TMP10 <= TMP8 + TMP6;
-            --TMP11 <= MAX(g, b);
+			
+			max1_in1 <= std_logic_vector(g);
+			max1_in2 <= std_logic_vector(b);
+            TMP11 <= unsigned(max1_out);
+			
             TMP12 <= TMP1 + TMP6;   --  <- B + C + D + E
+			
+			--Set vars for stage 2
+			TMP3_2 <= TMP3;
+			TMP4_2 <= TMP4;
+			TMP5_2 <= TMP5;
+			TMP7_2 <= TMP7;
+			TMP9_2 <= TMP9;
+			TMP10_2 <= TMP10; 
+			TMP11_2 <= TMP11;
+			TMP12_2 <= TMP12;
+			
         end if;
     end process;
-
+	
     process
     begin
         wait until rising_edge(i_clock); --Fifth clock boundary
 
         if v(5) = '1' then
-        -- TMP13 = TMP5 + TMP3 <- F + G + H + A
-        -- TMP14 = MAX TMP4, TMP10
-        -- TMP15 = TMP9 + TMP11
+			TMP13 <= TMP5_2 + TMP3_2; -- <- F + G + H + A
+			
+			max2_in1 <= std_logic_vector(TMP4_2);
+			max2_in2 <= std_logic_vector(TMP10_2);
+			TMP14 <= unsigned(max2_out);
+			
+			TMP15 <= TMP9_2 + TMP11_2;
         end if;
 
         if v(6) = '1' then 
-        -- TMP16 = TMP13 + TMP12     <- A + B + C + D + E + F + G + H
-        -- TMP17 = MAX TMP15, TMP7
-        -- TMP18 = TMP16 ROL 1
+			TMP16 <= TMP13 + TMP12_2;   --  <- A + B + C + D + E + F + G + H
+			
+			max2_in1 <= std_logic_vector(TMP15);
+			max2_in2 <= std_logic_vector(TMP7_2);
+			TMP17 <= unsigned(max2_out);
+			
+			TMP18 <= TMP16 ROL 1;
         end if;
 
         if v(7) = '1' then
-        -- TMP19 = TMP18 + TMP16    <- 3(a + b)
-        -- TMP20 = MAX TMP17, TMP14
-        -- TMP21 = TMP20 ROL 3
+			TMP19 <= TMP18 + TMP16;  --  <- 3(a + b)
+			
+			max2_in1 <= std_logic_vector(TMP17);
+			max2_in2 <= std_logic_vector(TMP14);
+			TMP20 <= unsigned(max2_out);
+
+			TMP21 <= TMP20 ROL 3;
         end if;
 
         if v(8) = '1' then
-        -- OUT = TMP21 - TMP19
-		o_dir <= "001";
-		o_edge <= '1';
+			if ((TMP21 - TMP19) > 383) then
+				o_edge <= '1';
+				o_dir <= "001";
+			else
+				o_edge <= '0';
+				o_dir <= "000";
+			end if;		
         end if;
     end process;
 
