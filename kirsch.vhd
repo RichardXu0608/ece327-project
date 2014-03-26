@@ -344,6 +344,7 @@ begin
             max2_dir2 <= DIR6;
 			TMP20 <= unsigned(max2_out); -- Dir priority: (Max of (max of NE, N), (max of NW, W))
             DIR7 <= max2_dir;
+            
 			TMP21 <= TMP20 ROL 3;
         end if;
 
