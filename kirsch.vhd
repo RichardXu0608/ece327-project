@@ -77,7 +77,7 @@ architecture main of kirsch is
     signal TMP13, TMP14, TMP15, TMP16  : unsigned(11 downto 0) := to_unsigned(0, 12);
     signal TMP17, TMP18, TMP19, TMP20  : unsigned(11 downto 0) := to_unsigned(0, 12);
 	signal TMP21, TMP3_2, TMP4_2       : unsigned(11 downto 0) := to_unsigned(0, 12);
-	signal TMP5_2, TMP7_2, TMP9_2      : unsigned(11 downto 0) := to_unsigned(0, 12);
+	signal TMP7_2, TMP9_2              : unsigned(11 downto 0) := to_unsigned(0, 12);
 	signal TMP10_2, TMP11_2, TMP12_2   : unsigned(11 downto 0) := to_unsigned(0, 12);
     
     signal DIR1, DIR2, DIR3, DIR4, DIR5, DIR6, DIR7  : unsigned(2 downto 0) := to_unsigned(0, 3);
@@ -251,7 +251,7 @@ begin
         end if;
 
         if v(2) = '1' then
-            TMP4 <= TMP1 + TMP2;
+            TMP4 <= TMP1 + TMP2; --Max of NE, N (Dir priority: N)
 			
 			max1_in1 <= std_logic_vector(h);
 			max1_in2 <= std_logic_vector(e);
@@ -264,7 +264,7 @@ begin
         end if;    
         
         if v(3) = '1' then    
-            TMP7 <= TMP5 + TMP3;
+            TMP7 <= TMP5 + TMP3; --Max of SW, S (Dir priority: S)
 			
 			max1_in1 <= std_logic_vector(f);
 			max1_in2 <= std_logic_vector(c);
@@ -291,7 +291,6 @@ begin
 			--Set vars for stage 2
 			TMP3_2 <= TMP3;
 			TMP4_2 <= TMP4;
-			TMP5_2 <= TMP5;
 			TMP7_2 <= TMP7;
 			TMP9_2 <= TMP9;
 			TMP10_2 <= TMP10; 
@@ -310,7 +309,7 @@ begin
         wait until rising_edge(i_clock); --Fifth clock boundary
 
         if v(5) = '1' then
-			TMP13 <= TMP5_2 + TMP3_2; -- <- F + G + H + A
+			TMP13 <= TMP9_2 + TMP3_2; -- <- F + G + H + A
 			
 			max2_in1 <= std_logic_vector(TMP7_2); --  (max of SW, S) DIR2
 			max2_in2 <= std_logic_vector(TMP10_2); -- (max of SE, E) DIR3
