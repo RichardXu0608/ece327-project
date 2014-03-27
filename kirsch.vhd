@@ -13,10 +13,10 @@ end entity max;
 
 architecture main of max is
 begin 
-       o_output <= i_input0 when i_input0 > i_input1 
+       o_output <= i_input0 when i_input0 >= i_input1 
                    else i_input1;
        
-       o_dir    <= i_dir0 when i_input0 > i_input1
+       o_dir    <= i_dir0 when i_input0 >= i_input1
                    else i_dir1;
 end architecture main;
 
@@ -244,37 +244,37 @@ begin
         if(y_pos >= 2 AND x_pos >= 3 AND v(1) = '1') then -- We can start processing data: x_pos is >=3 here because we increment x_pos before getting here
             TMP1 <= b + c;
 			
-			max1_in1  <= std_logic_vector(d);
-			max1_in2  <= std_logic_vector(a);
+			max1_in1  <= std_logic_vector(a);
+			max1_in2  <= std_logic_vector(d);
             max1_dir1 <= "110";                        
             max1_dir2 <= "010";
-            TMP2 <= unsigned(max1_out); --Max of NE, N (Dir priority: N)
+            TMP2 <= unsigned(max1_out);
             DIR1 <= max1_dir;
 			
             TMP3 <= f + g;
         end if;
 
         if v(2) = '1' then
-            TMP4 <= TMP1 + TMP2; --Max of NE, N (Dir priority: N)
+            TMP4 <= TMP1 + TMP2;
 			
-			max1_in1 <= std_logic_vector(h);
-			max1_in2 <= std_logic_vector(e);
+			max1_in1 <= std_logic_vector(e);
+			max1_in2 <= std_logic_vector(h);
             max1_dir1 <= "111";                        
             max1_dir2 <= "011";
-            TMP5 <= unsigned(max1_out); --Max of SW, S (Dir priority: S)
+            TMP5 <= unsigned(max1_out);
 			DIR2 <= max1_dir;
             
             TMP6 <= d + e;
         end if;    
         
         if v(3) = '1' then    
-            TMP7 <= TMP5 + TMP3; --Max of SW, S (Dir priority: S)
+            TMP7 <= TMP5 + TMP3;
 			
-			max1_in1 <= std_logic_vector(f);
-			max1_in2 <= std_logic_vector(c);
+			max1_in1 <= std_logic_vector(c);
+			max1_in2 <= std_logic_vector(f);
             max1_dir1 <= "101";                        
             max1_dir2 <= "000";
-            TMP8 <= unsigned(max1_out); --Max of SE, E (Dir priority: E)
+            TMP8 <= unsigned(max1_out);
             DIR3 <= max1_dir;
             
             TMP9 <= h + a;
@@ -287,7 +287,7 @@ begin
 			max1_in2 <= std_logic_vector(g);
             max1_dir1 <= "100";                        
             max1_dir2 <= "001";            
-            TMP11 <= unsigned(max1_out); --Max of NW, W (Dir priority: W)
+            TMP11 <= unsigned(max1_out);
             DIR4 <= max1_dir;
 			
             TMP12 <= TMP1 + TMP6;   --  <- B + C + D + E
@@ -314,11 +314,11 @@ begin
         if v(5) = '1' then
 			TMP13 <= TMP9_2 + TMP3_2; -- <- F + G + H + A
 			
-			max2_in1 <= std_logic_vector(TMP7_2); --  (max of SW, S) DIR2
-			max2_in2 <= std_logic_vector(TMP10_2); -- (max of SE, E) DIR3
-            max2_dir1 <= DIR2_2;                        
+			max2_in1 <= std_logic_vector(TMP4_2);
+			max2_in2 <= std_logic_vector(TMP10_2);
+            max2_dir1 <= DIR1_2;                        
             max2_dir2 <= DIR3_2;  
-			TMP14 <= unsigned(max2_out); -- Dir priority: (max of SE, E)
+			TMP14 <= unsigned(max2_out);
 			DIR5 <= max2_dir;
             
 			TMP15 <= TMP9_2 + TMP11_2;
@@ -327,11 +327,11 @@ begin
         if v(6) = '1' then 
 			TMP16 <= TMP13 + TMP12_2;   --  <- A + B + C + D + E + F + G + H
 			
-			max2_in1 <= std_logic_vector(TMP4_2); --  (max of NE, N) DIR1
-			max2_in2 <= std_logic_vector(TMP15);  --  (max of NW, W) DIR4
-            max2_dir1 <= DIR1_2;                        
-            max2_dir2 <= DIR4_2;
-			TMP17 <= unsigned(max2_out); -- Dir priority: (max of NW, W)
+			max2_in1 <= std_logic_vector(TMP15);
+			max2_in2 <= std_logic_vector(TMP7_2);
+            max2_dir1 <= DIR4_2;                        
+            max2_dir2 <= DIR2_2;
+			TMP17 <= unsigned(max2_out);
 			DIR6 <= max2_dir;
             
 			TMP18 <= TMP16 ROL 1;
@@ -340,11 +340,11 @@ begin
         if v(7) = '1' then
 			TMP19 <= TMP18 + TMP16;  --  <- 3(a + b)
 			
-			max2_in1 <= std_logic_vector(TMP14); -- Max of (max of SW, S), (max of SE, E)
-			max2_in2 <= std_logic_vector(TMP17); -- Max of (max of NE, N), (max of NW, W)
-            max2_dir1 <= DIR5;                        
-            max2_dir2 <= DIR6;
-			TMP20 <= unsigned(max2_out); -- Dir priority: (Max of (max of NE, N), (max of NW, W))
+			max2_in1 <= std_logic_vector(TMP17);
+			max2_in2 <= std_logic_vector(TMP14);
+            max2_dir1 <= DIR6;                        
+            max2_dir2 <= DIR5;
+			TMP20 <= unsigned(max2_out);
             DIR7 <= max2_dir;
             
 			TMP21 <= TMP20 ROL 3;
