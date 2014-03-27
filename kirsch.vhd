@@ -6,8 +6,8 @@ entity max is
   port (
     i_input0, i_input1	: in std_logic_vector(11 downto 0);  -- input data
     i_dir0,   i_dir1    : in std_logic_vector(2 downto 0);  -- input data
-    o_output       		: out std_logic_vector(11 downto 0);  -- output data
-    o_dir               : out std_logic_vector(2 downto 0);
+    o_output       	: out std_logic_vector(11 downto 0);  -- output data
+    o_dir               : out std_logic_vector(2 downto 0)
   );
 end entity max;
 
@@ -80,8 +80,8 @@ architecture main of kirsch is
 	signal TMP7_2, TMP9_2              : unsigned(11 downto 0) := to_unsigned(0, 12);
 	signal TMP10_2, TMP11_2, TMP12_2   : unsigned(11 downto 0) := to_unsigned(0, 12);
     
-    signal DIR1, DIR2, DIR3, DIR4, DIR5, DIR6, DIR7  : unsigned(2 downto 0) := to_unsigned(0, 3);
-    signal DIR1_2, DIR2_2, DIR3_3, DIR4_4            : unsigned(2 downto 0) := to_unsigned(0, 3);
+    signal DIR1, DIR2, DIR3, DIR4, DIR5, DIR6, DIR7  : std_logic_vector(2 downto 0) := "000";
+    signal DIR1_2, DIR2_2, DIR3_2, DIR4_2            : std_logic_vector(2 downto 0) := "000";
 	
 	signal max1_in1   : std_logic_vector(11 downto 0);
 	signal max1_in2   : std_logic_vector(11 downto 0);
@@ -161,7 +161,11 @@ begin
 		 o_output  => max2_out,
          o_dir     => max2_dir
 	 );
-    
+    --DEBUG
+	
+	debug_led_red <= "000000000" & v;
+	
+	
     -- Calculate the mem_x_wren signals
     -- We write data into a memory buffer all the time essentially, but we only change the write pos when we get i_valid
     -- This has the same effect as making the write-enable tied into the i_valid signal
@@ -299,15 +303,14 @@ begin
             
             DIR1_2 <= DIR1;
             DIR2_2 <= DIR2;
-            DIR3_3 <= DIR3;
-            DIR4_4 <= DIR4;     
+            DIR3_2 <= DIR3;
+            DIR4_2 <= DIR4;     
         end if;
     end process;
 	
     process
     begin
         wait until rising_edge(i_clock); --Fifth clock boundary
-
         if v(5) = '1' then
 			TMP13 <= TMP9_2 + TMP3_2; -- <- F + G + H + A
 			
