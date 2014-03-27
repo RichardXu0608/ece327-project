@@ -246,8 +246,8 @@ begin
 			
 			max1_in1  <= std_logic_vector(a);
 			max1_in2  <= std_logic_vector(d);
-            max1_dir1 <= "110";                        
-            max1_dir2 <= "010";
+            max1_dir1 <= "010";                        
+            max1_dir2 <= "110";
             TMP2 <= unsigned(max1_out);
             DIR1 <= max1_dir;
 			
@@ -259,8 +259,8 @@ begin
 			
 			max1_in1 <= std_logic_vector(e);
 			max1_in2 <= std_logic_vector(h);
-            max1_dir1 <= "111";                        
-            max1_dir2 <= "011";
+            max1_dir1 <= "011";                        
+            max1_dir2 <= "111";
             TMP5 <= unsigned(max1_out);
 			DIR2 <= max1_dir;
             
@@ -272,8 +272,8 @@ begin
 			
 			max1_in1 <= std_logic_vector(c);
 			max1_in2 <= std_logic_vector(f);
-            max1_dir1 <= "101";                        
-            max1_dir2 <= "000";
+            max1_dir1 <= "000";                        
+            max1_dir2 <= "101";
             TMP8 <= unsigned(max1_out);
             DIR3 <= max1_dir;
             
