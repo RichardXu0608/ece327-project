@@ -255,7 +255,7 @@ begin
         end if;
 
         if v(2) = '1' then
-            TMP4 <= TMP1 + TMP2; --Max of NE, N (Dir priority: N)
+            TMP4 <= TMP1 + TMP2; --Max of NE, N
 			
 			max1_in1 <= std_logic_vector(h);
 			max1_in2 <= std_logic_vector(e);
@@ -268,7 +268,7 @@ begin
         end if;    
         
         if v(3) = '1' then    
-            TMP7 <= TMP5 + TMP3; --Max of SW, S (Dir priority: S)
+            TMP7 <= TMP5 + TMP3; --Max of SW, S
 			
 			max1_in1 <= std_logic_vector(f);
 			max1_in2 <= std_logic_vector(c);
@@ -281,7 +281,7 @@ begin
         end if;    
             
         if v(4) = '1' then
-            TMP10 <= TMP8 + TMP6;
+            TMP10 <= TMP8 + TMP6; --Max of SE, E 
 			
 			max1_in1 <= std_logic_vector(b);
 			max1_in2 <= std_logic_vector(g);
