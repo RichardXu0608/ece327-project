@@ -314,12 +314,17 @@ begin
         if v(5) = '1' then
 			TMP13 <= TMP9_2 + TMP3_2; -- <- F + G + H + A
 			
-			max2_in1 <= std_logic_vector(TMP4_2);
-			max2_in2 <= std_logic_vector(TMP10_2);
-            max2_dir1 <= DIR1_2;
-            max2_dir2 <= DIR3_2;
+			--max2_in1 <= std_logic_vector(TMP4_2);
+			--max2_in2 <= std_logic_vector(TMP10_2);
+			max2_in1 <= std_logic_vector(TMP10_2);
+			max2_in2 <= std_logic_vector(TMP7_2);
+            --max2_dir1 <= DIR1_2;
+            --max2_dir2 <= DIR3_2;
+            max2_dir1 <= DIR3_2;
+            max2_dir1 <= DIR2_2;
 			TMP14 <= unsigned(max2_out);
-			DIR5 <= max2_dir; -- Max of (N, NE), (E, SE)
+			--DIR5 <= max2_dir; -- Max of (N, NE), (E, SE)
+			DIR5 <= max2_dir; -- Max of (E, SE), (S, SW)
             
 			TMP15 <= TMP9_2 + TMP11_2;
         end if;
@@ -328,11 +333,14 @@ begin
 			TMP16 <= TMP13 + TMP12_2;   --  <- A + B + C + D + E + F + G + H
 			
 			max2_in1 <= std_logic_vector(TMP15);
-			max2_in2 <= std_logic_vector(TMP7_2);
+			--max2_in2 <= std_logic_vector(TMP7_2);
+			max2_in2 <= std_logic_vector(TMP4_2);
             max2_dir1 <= DIR4_2;
-            max2_dir2 <= DIR2_2;
+            --max2_dir2 <= DIR2_2;
+            max2_dir2 <= DIR1_2;
 			TMP17 <= unsigned(max2_out);
-			DIR6 <= max2_dir; -- Max of (W, NW), (S, SW)
+			--DIR6 <= max2_dir; -- Max of (W, NW), (S, SW)
+			DIR6 <= max2_dir; -- Max of (W, NW), (N, NE)
             
 			TMP18 <= TMP16 ROL 1;
         end if;
@@ -345,7 +353,7 @@ begin
             max2_dir1 <= DIR6;
             max2_dir2 <= DIR5;
 			TMP20 <= unsigned(max2_out);
-            DIR7 <= max2_dir; -- Max of ((W, NW), (S, SW)), ((N, NE), (E, SE))
+            DIR7 <= max2_dir; -- Max of ((W, NW), (N, NE)), ((E, SE), (S, SW))
             
 			TMP21 <= TMP20 ROL 3;
         end if;
