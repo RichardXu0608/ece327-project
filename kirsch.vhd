@@ -4,9 +4,9 @@ use ieee.numeric_std.all;
 
 entity max is
   port (
-    i_input0, i_input1	: in unsigned(13 downto 0);  -- input data
-    i_dir0,   i_dir1    : in std_logic_vector(2 downto 0);  -- input data
-    o_output       	: out unsigned(13 downto 0);  -- output data
+    i_input0, i_input1	: in  std_logic_vector(13 downto 0);  -- input data
+    i_dir0,   i_dir1    : in  std_logic_vector(2 downto 0);  -- input data
+    o_output       	    : out std_logic_vector(13 downto 0);  -- output data
     o_dir               : out std_logic_vector(2 downto 0)
   );
 end entity max;
@@ -69,7 +69,7 @@ architecture main of kirsch is
 
     signal v          : std_logic_vector(8 downto 0) := "000000000";
     
-    signal a, b, c, d, e, f, g, h, i   : unsigned(7 downto 0) := to_unsigned(0, 8);
+    signal a, b, c, d, e, f, g, h, i   : std_logic_vector(7 downto 0);
     
     signal TMP1, TMP2, TMP3, TMP4      : unsigned(13 downto 0) := to_unsigned(0, 14);
     signal TMP5, TMP6, TMP7, TMP8      : unsigned(13 downto 0) := to_unsigned(0, 14);
@@ -83,26 +83,21 @@ architecture main of kirsch is
     signal DIR1, DIR2, DIR3, DIR4, DIR5, DIR6, DIR7  : std_logic_vector(2 downto 0) := "000";
     signal DIR1_2, DIR2_2, DIR3_2, DIR4_2            : std_logic_vector(2 downto 0) := "000";
 	
-	signal max1_in1   : unsigned(13 downto 0);
-	signal max1_in2   : unsigned(13 downto 0);
+	signal max1_in1   : std_logic_vector(13 downto 0);
+	signal max1_in2   : std_logic_vector(13 downto 0);
     signal max1_dir1  : std_logic_vector(2 downto 0);
 	signal max1_dir2  : std_logic_vector(2 downto 0);
-	signal max1_out   : unsigned(13 downto 0);
+	signal max1_out   : std_logic_vector(13 downto 0);
     signal max1_dir   : std_logic_vector(2 downto 0);
 	
-	signal max2_in1   : unsigned(13 downto 0);
-	signal max2_in2   : unsigned(13 downto 0);
+	signal max2_in1   : std_logic_vector(13 downto 0);
+	signal max2_in2   : std_logic_vector(13 downto 0);
     signal max2_dir1  : std_logic_vector(2 downto 0);
 	signal max2_dir2  : std_logic_vector(2 downto 0);
-	signal max2_out   : unsigned(13 downto 0);
+	signal max2_out   : std_logic_vector(13 downto 0);
     signal max2_dir   : std_logic_vector(2 downto 0);
-	
-	signal edge_1     : std_logic_vector(2 downto 0);
-	signal edge_2     : std_logic_vector(2 downto 0);
-	
-	signal curr_mode  : std_logic_vector(1 downto 0) := "00";
     
-    signal eoi        : std_logic             := '0';
+    signal eoi        : std_logic := '0';
     
     signal mem_1_wren : std_logic;
     signal mem_1_q    : std_logic_vector(7 downto 0);
@@ -163,15 +158,14 @@ begin
 	 );
     --DEBUG
 	
-	debug_led_red <= "000000000" & v;
-	
-	
+	debug_led_red <= c & d & "00";
+	debug_led_grn <= "000" & std_logic_vector(state);
     -- Calculate the mem_x_wren signals
     -- We write data into a memory buffer all the time essentially, but we only change the write pos when we get i_valid
     -- This has the same effect as making the write-enable tied into the i_valid signal
-    mem_1_wren <= '1' when i = 1 else '0';
-	mem_2_wren <= '1' when i = 2 else '0';
-	mem_3_wren <= '1' when i = 4 else '0';
+    mem_1_wren <= '1' when state = 0 else '0';
+	mem_2_wren <= '1' when state = 1 else '0';
+	mem_3_wren <= '1' when state = 2 else '0';
 			
    o_row <= std_logic_vector(y_pos);
    o_dir <= DIR7;
@@ -182,7 +176,10 @@ begin
 
 	o_valid <= '1' when ((((y_pos >= 2) AND (x_pos >= 3)) OR (y_pos >= 3)) AND (v(8) = '1'))
 	      else '0';  
-			   		   
+	
+	state <= 1 when ((((y_pos >= 2) AND (x_pos >= 3)) OR (y_pos >= 3)) AND (v(8) = '1'))
+	      else '0';
+	
     -- Valid bit generator
     v(0) <= i_valid;
     valid_for : for i in 1 to 8 generate
@@ -198,35 +195,36 @@ begin
     begin
         wait until rising_edge(i_clock);
         if v(0) = '1' then
-            -- Shift the data from one cell to the other, which saves on reads from the memory units
-            a <= b;
-            b <= c;
-            h <= i;
-            i <= d;
-            g <= f;
-            f <= e;
-            
             -- e is always the most recently entered pixel: we go from [2, 2] to [255, 255] in the image processing (indexed from [0, 0])
-            e <= unsigned(i_pixel);
+            e <= i_pixel;
             
             -- Grab the fresh cells from the correct memory buffer depending 
             -- on the value of state: 
             -- if we insert into memory buffer 3, 'e' is in buffer 3 so c is in buffer 1, etc...)
             
             case state is
-                when "001" =>
-                    d <= unsigned(mem_3_q);
-                    c <= unsigned(mem_2_q);
+                when "000" =>
+                    d <= mem_3_q;
+                    c <= mem_2_q;
+                when "001" => 
+                    d <= mem_1_q;
+                    c <= mem_3_q;
                 when "010" => 
-                    d <= unsigned(mem_1_q);
-                    c <= unsigned(mem_3_q);
-                when "100" => 
-                    d <= unsigned(mem_2_q);
-                    c <= unsigned(mem_1_q);
+                    d <= mem_2_q;
+                    c <= mem_1_q;
                 when others =>
-                    d <= to_unsigned(0, 8);
-                    c <= to_unsigned(0, 8);
+                    d <= "00000000";
+                    c <= "00000000";
             end case;
+			
+			b <= c;
+			a <= b;
+			
+			i <= d;
+			h <= i;
+			
+			f <= e;
+			g <= f;
             
             --Increment the x_pos and possibly y_pos
             if(x_pos = 255) then
@@ -236,72 +234,60 @@ begin
                 end if;
             
                 y_pos <= y_pos + 1;
-                state <= state rol 1;
+				state <= (state + 1) mod 3;
             end if;
             x_pos <= x_pos + 1;
 
         end if;
 
         if(y_pos >= 2 AND x_pos >= 3 AND v(1) = '1') then -- We can start processing data: x_pos is >=3 here because we increment x_pos before getting here
-            --TMP1 <= "00000" & (("0" & b) + ("0" & c));
-			TMP1 <= resize(b + c, 14);
+            TMP1 <= "00000" & (unsigned("0" & b) + unsigned("0" & c));
 			
-			--max1_in1  <= "000000" & std_logic_vector(a);
-			--max1_in2  <= "000000" & std_logic_vector(d);
-			max1_in1  <= resize(a, 14);
-			max1_in2  <= resize(d, 14);
+			max1_in1  <= "000000" & a;
+			max1_in2  <= "000000" & d;
             max1_dir1 <= "010";
             max1_dir2 <= "110";
             TMP2 <= unsigned(max1_out);
-            DIR1 <= max1_dir; -- Max of N, NE
+            DIR1 <= max1_dir; 
 			
-            TMP3 <= "00000" & (("0" & f) + ("0" & g));
-			--TMP3 <= f + g;
+            TMP3 <= "00000" & (unsigned("0" & f) + unsigned("0" & g));
         end if;
 
         if v(2) = '1' then
-            TMP4 <= TMP1 + TMP2;
+            TMP4 <= TMP1 + TMP2; -- Max of N, NE
 			
-			--max1_in1 <= "000000" & std_logic_vector(e);
-			--max1_in2 <= "000000" & std_logic_vector(h);
-			max1_in1 <= resize(e, 14);
-			max1_in2 <= resize(h, 14);
+			max1_in1 <= "000000" & e;
+			max1_in2 <= "000000" & h;
             max1_dir1 <= "011";
             max1_dir2 <= "111";
             TMP5 <= unsigned(max1_out);
-			DIR2 <= max1_dir; -- Max of S, SW
+			DIR2 <= max1_dir; 
             
-            --TMP6 <= "00000" & (("0" & d) + ("0" & e));
-			TMP6 <= resize(d + e, 14);
+            TMP6 <= "00000" & (unsigned("0" & d) + unsigned("0" & e));
         end if;    
         
         if v(3) = '1' then    
-            TMP7 <= TMP5 + TMP3;
+            TMP7 <= TMP5 + TMP3; -- Max of S, SW
 			
-			--max1_in1 <= "000000" & std_logic_vector(c);
-			--max1_in2 <= "000000" & std_logic_vector(f);
-			max1_in1 <= resize(c, 14);
-			max1_in2 <= resize(f, 14);
+			max1_in1 <= "000000" & c;
+			max1_in2 <= "000000" & f;
             max1_dir1 <= "000";
             max1_dir2 <= "101";
             TMP8 <= unsigned(max1_out);
-            DIR3 <= max1_dir; -- Max of E, SE
+            DIR3 <= max1_dir; 
             
-            --TMP9 <= "00000" & (("0" & h) + ("0" & a));
-			TMP9 <= resize(h + a, 14);
+            TMP9 <= "00000" & (unsigned("0" & h) + unsigned("0" & a));
         end if;    
             
         if v(4) = '1' then
-            TMP10 <= TMP8 + TMP6;
+            TMP10 <= TMP8 + TMP6; -- Max of E, SE
 			
-			--max1_in1 <= "000000" & std_logic_vector(g);
-			--max1_in2 <= "000000" & std_logic_vector(b);
-			max1_in1 <= resize(g, 14);
-			max1_in2 <= resize(b, 14);
+			max1_in1 <= "000000" & g;
+			max1_in2 <= "000000" & b;
             max1_dir1 <= "001";
             max1_dir2 <= "100";            
             TMP11 <= unsigned(max1_out);
-            DIR4 <= max1_dir; -- Max of W, NW
+            DIR4 <= max1_dir;
 			
             TMP12 <= TMP1 + TMP6;   --  <- B + C + D + E
 			
@@ -325,52 +311,44 @@ begin
     begin
         wait until rising_edge(i_clock); --Fifth clock boundary
         if v(5) = '1' then
+			TMP15 <= TMP9_2 + TMP11_2; -- Max of W, NW
 			TMP13 <= TMP9_2 + TMP3_2; -- <- F + G + H + A
 			
-			--max2_in1 <= std_logic_vector(TMP4_2);
-			--max2_in2 <= std_logic_vector(TMP10_2);
-			max2_in1 <= TMP10_2;
-			max2_in2 <= TMP7_2;
-            --max2_dir1 <= DIR1_2;
-            --max2_dir2 <= DIR3_2;
+			max2_in1 <= std_logic_vector(TMP10_2); -- Max of E, SE
+			max2_in2 <= std_logic_vector(TMP7_2);  -- Max of S, SW
             max2_dir1 <= DIR3_2;
-            max2_dir1 <= DIR2_2;
-			TMP14 <= unsigned(max2_out);
+            max2_dir2 <= DIR2_2;
+			TMP14 <= unsigned(max2_out); -- Max of (E, SE), (S, SW)
 			--DIR5 <= max2_dir; -- Max of (N, NE), (E, SE)
-			DIR5 <= max2_dir; -- Max of (E, SE), (S, SW)
-            
-			TMP15 <= TMP9_2 + TMP11_2;
+			DIR5 <= max2_dir; -- DIR of (E, SE), (S, SW)
         end if;
 
         if v(6) = '1' then 
-			TMP16 <= TMP13 + TMP12_2;   --  <- A + B + C + D + E + F + G + H
-			
-			max2_in1 <= TMP15;
-			--max2_in2 <= std_logic_vector(TMP7_2);
-			max2_in2 <= TMP4_2;
-            max2_dir1 <= DIR4_2;
-            --max2_dir2 <= DIR2_2;
-            max2_dir2 <= DIR1_2;
-			TMP17 <= unsigned(max2_out);
-			--DIR6 <= max2_dir; -- Max of (W, NW), (S, SW)
-			DIR6 <= max2_dir; -- Max of (W, NW), (N, NE)
-            
+			TMP16 <= (TMP13 + TMP12_2);   --  <- A + B + C + D + E + F + G + H
 			TMP18 <= TMP16 ROL 1;
+			
+			max2_in1 <= std_logic_vector(TMP15);   -- Max of W, NW
+			max2_in2 <= std_logic_vector(TMP4_2);  -- Max of N, NE
+            max2_dir1 <= DIR4_2;
+            max2_dir2 <= DIR1_2;
+			TMP17 <= unsigned(max2_out); -- Max of (W, NW), (N, NE)
+			--DIR6 <= max2_dir; -- Max of (W, NW), (S, SW)
+			DIR6 <= max2_dir; -- DIR of (W, NW), (N, NE)
         end if;
 
         if v(7) = '1' then
 			TMP19 <= TMP18 + TMP16;  --  <- 3(a + b)
 			
-			max2_in1 <= TMP17;
-			max2_in2 <= TMP14;
+			max2_in1 <= std_logic_vector(TMP17); -- Max of (W, NW), (N, NE)
+			max2_in2 <= std_logic_vector(TMP14); -- Max of (E, SE), (S, SW)
             max2_dir1 <= DIR6;
             max2_dir2 <= DIR5;
-			TMP20 <= unsigned(max2_out) ROL 3;
-            DIR7 <= max2_dir; -- Max of ((W, NW), (N, NE)), ((E, SE), (S, SW))
+			TMP20 <= unsigned(max2_out) ROL 3; -- Max of ((W, NW), (N, NE)), ((E, SE), (S, SW))
+            DIR7 <= max2_dir; -- dir of ((W, NW), (N, NE)), ((E, SE), (S, SW))
         end if;
 
         if v(8) = '1' then			
-			if (((TMP20 - TMP19) > 382) AND ((TMP20 - TMP19) < 6121)) then
+			if (((TMP20 - TMP19) > 382) AND ((TMP20 - TMP19) < 6120)) then
 				o_edge <= '1';
 			else
 				o_edge <= '0';
