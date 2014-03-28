@@ -33,14 +33,6 @@ end entity;
 
 architecture main of kirsch is
 
-    -- A function to rotate left (rol) a vector by n bits  
-    function "rol" ( a : std_logic_vector; n : natural )
-        return std_logic_vector
-    is
-    begin
-        return std_logic_vector( unsigned(a) rol n );
-    end function;
-
     signal x_pos      : unsigned(7 downto 0) := to_unsigned(0, 8);
     signal y_pos      : unsigned(7 downto 0) := to_unsigned(0, 8);
     signal state      : unsigned(2 downto 0);
@@ -117,7 +109,6 @@ begin
 		 	
     -- Valid bit generator	
 	v(0) <= i_valid;
-
     valid_for : for i in 1 to 8 generate
         process begin
             wait until rising_edge(i_clock);
@@ -136,49 +127,7 @@ begin
 			state <= to_unsigned(1, 3);
 		end if;
 		
-        if v(3) = '1' then
-		
-			if e > h then
-				TMP5 <= e + f + g; -- S
-				DIR2 <= "011";
-			else
-				TMP5 <= h + f + g; -- SW
-				DIR2 <= "111";
-			end if;
-			--TMP5 is max of S and SW
-			
-			--Set vars for stage 2
-			TMP2_2 <= TMP2; --TMP2 is max of N and NE
-			TMP5_2 <= TMP5; --TMP5 is max of S and SW
-			TMP8_2 <= TMP8; --TMP8 is max of E, SE
-			TMP11_2 <= TMP11; --TMP11 is max of W, NW
-			TMP12_2 <= a + b + c + d + e + f + g + h;
-            
-            DIR1_2 <= DIR1;
-            DIR2_2 <= DIR2;
-            DIR3_2 <= DIR3;
-            DIR4_2 <= DIR4;
-			
-		elsif v(2) = '1' then    
-			if c > f then
-				TMP8 <= c + d + e; -- E
-				DIR3 <= "000";
-			else
-				TMP8 <= f + d + e; -- SE
-				DIR3 <= "101";
-			end if;
-			--TMP8 is max of E, SE
-		elsif v(1) = '1' then
-			if a > d then
-				TMP2 <= a + b + c; -- N
-				DIR1 <= "010";
-			else
-				TMP2 <= d + b + c; -- NE
-				DIR1 <= "110";
-			end if;
-			--TMP2 is max of N and NE  
-		elsif v(0) = '1' then
-			
+		if v(0) = '1' then
 			-- Grab the fresh cells from the correct memory buffer depending 
 			-- on the value of state: 
 			-- if we insert into memory buffer 3, 'e' is in buffer 3 so c is in buffer 1, etc...)
@@ -222,7 +171,7 @@ begin
 				state <= state ROL 1;
 			end if;
 			x_pos <= x_pos + 1;
-			
+		
 			-- One square to the left because we're doing matrix shifts in this clock cycle
 			if f > c then
 				TMP11 <= f + i + b; -- W
@@ -232,10 +181,49 @@ begin
 				DIR4 <= "100";
 			end if;
 			--TMP11_2 is max of W, NW
-        end if;
+		elsif v(1) = '1' then
+			if a > d then
+				TMP2 <= a + b + c; -- N
+				DIR1 <= "010";
+			else
+				TMP2 <= d + b + c; -- NE
+				DIR1 <= "110";
+			end if;
+			--TMP2 is max of N and NE  
+		elsif v(2) = '1' then    
+			if c > f then
+				TMP8 <= c + d + e; -- E
+				DIR3 <= "000";
+			else
+				TMP8 <= f + d + e; -- SE
+				DIR3 <= "101";
+			end if;			
+			--TMP8 is max of E, SE
+		elsif v(3) = '1' then
+		
+			if e > h then
+				TMP5 <= e + f + g; -- S
+				DIR2 <= "011";
+			else
+				TMP5 <= h + f + g; -- SW
+				DIR2 <= "111";
+			end if;
+			--TMP5 is max of S and SW
+			
+			--Set vars for stage 2
+			TMP2_2 <= TMP2; --TMP2 is max of N and NE
+			TMP5_2 <= TMP5; --TMP5 is max of S and SW
+			TMP8_2 <= TMP8; --TMP8 is max of E, SE
+			TMP11_2 <= TMP11; --TMP11 is max of W, NW
+			TMP12_2 <= a + b + c + d + e + f + g + h;
+            
+            DIR1_2 <= DIR1;
+            DIR2_2 <= DIR2;
+            DIR3_2 <= DIR3;
+            DIR4_2 <= DIR4;			
+	    end if;	
 		
 		if v(4) = '1' then
-			
 			if TMP8_2 > TMP5_2 then
 				TMP14 <= TMP8_2; -- Max of E, SE
 				DIR5 <= DIR3_2;
@@ -243,10 +231,9 @@ begin
 				TMP14 <= TMP5_2; -- Max of S, SW
 				DIR5 <= DIR2_2;
 			end if;
-			--TMP14 is Max of (E, SE), (S, SW)
-
+			--TMP14 is Max of (E, SE), (S, SW)		
         elsif v(5) = '1' then 
-			TMP18 <= TMP12_2 ROL 1;
+			TMP18 <= TMP12_2 sll 1;
 			
 			if TMP11_2 > TMP2_2 then
 				TMP17 <= TMP11_2; -- Max of W, NW
@@ -256,19 +243,18 @@ begin
 				DIR6 <= DIR1_2;
 			end if;
 			--TMP17 is Max of (W, NW), (N, NE)
-
         elsif v(6) = '1' then
 		
 			TMP19 <= TMP18 + TMP12_2;
 		
 			if TMP17 > TMP14 then
-				TMP20 <= TMP17 ROL 3; -- Max of (W, NW), (N, NE)
+				TMP20 <= TMP17 sll 3; -- Max of (W, NW), (N, NE)
 				DIR7 <= DIR6;
 			else
-				TMP20 <= TMP14 ROL 3; -- Max of (E, SE), (S, SW)
+				TMP20 <= TMP14 sll 3; -- Max of (E, SE), (S, SW)
 				DIR7 <= DIR5;
 			end if;
-			--TMP20 is Max of ((W, NW), (N, NE)), ((E, SE), (S, SW))
+			--TMP20 is Max of ((W, NW), (N, NE)), ((E, SE), (S, SW))		
         elsif v(7) = '1' then			
 			if (TMP20 - TMP19) > 383 then
 				o_edge <= '1';				 
