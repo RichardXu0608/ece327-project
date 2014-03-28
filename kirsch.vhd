@@ -47,14 +47,14 @@ architecture main of kirsch is
 
     signal v          : std_logic_vector(8 downto 0);
     
-    signal a, b, c, d, e, f, g, h, i   : std_logic_vector(7 downto 0);
+    signal a, b, c, d, e, f, g, h, i   : unsigned(11 downto 0);
     
     signal TMP1, TMP2, TMP3, TMP4      : unsigned(11 downto 0) := to_unsigned(0, 12);
     signal TMP5, TMP6, TMP7, TMP8      : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP9, TMP10, TMP11_2, TMP12 : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP9, TMP10, TMP11, TMP12   : unsigned(11 downto 0) := to_unsigned(0, 12);
     signal TMP13, TMP14, TMP15, TMP16  : unsigned(11 downto 0) := to_unsigned(0, 12);
     signal TMP17, TMP18, TMP19, TMP20  : unsigned(11 downto 0) := to_unsigned(0, 12);
-	signal TMP2_2, TMP5_2              : unsigned(11 downto 0) := to_unsigned(0, 12);
+	signal TMP2_2, TMP5_2, TMP11_2     : unsigned(11 downto 0) := to_unsigned(0, 12);
 	signal TMP8_2, TMP12_2             : unsigned(11 downto 0) := to_unsigned(0, 12);
     
     signal DIR1, DIR2, DIR3, DIR4, DIR5, DIR6, DIR7  : std_logic_vector(2 downto 0);
@@ -135,46 +135,45 @@ begin
 		if i_reset = '1' then
 			state <= to_unsigned(1, 3);
 		end if;
-        
+		
         if v(3) = '1' then
 		
 			if e > h then
-				TMP5 <= unsigned("0000" & e) + unsigned("0000" & f) + unsigned("0000" & g); -- S
+				TMP5 <= e + f + g; -- S
 				DIR2 <= "011";
 			else
-				TMP5 <= unsigned("0000" & h) + unsigned("0000" & f) + unsigned("0000" & g); -- SW
+				TMP5 <= h + f + g; -- SW
 				DIR2 <= "111";
 			end if;
-			--TMP5 is max of S and SW	
-			
-            --TMP12 <= TMP1 + TMP6;   --  <- B + C + D + E
+			--TMP5 is max of S and SW
 			
 			--Set vars for stage 2
 			TMP2_2 <= TMP2; --TMP2 is max of N and NE
 			TMP5_2 <= TMP5; --TMP5 is max of S and SW
 			TMP8_2 <= TMP8; --TMP8 is max of E, SE
-			TMP12_2 <= unsigned("0000" & a) + unsigned("0000" & b) + unsigned("0000" & c) + unsigned("0000" & d) + unsigned("0000" & e) + unsigned("0000" & f)  + unsigned("0000" & g) + unsigned("0000" & h);
+			TMP11_2 <= TMP11; --TMP11 is max of W, NW
+			TMP12_2 <= a + b + c + d + e + f + g + h;
             
             DIR1_2 <= DIR1;
             DIR2_2 <= DIR2;
             DIR3_2 <= DIR3;
             DIR4_2 <= DIR4;
-		
+			
 		elsif v(2) = '1' then    
-			if e > h then
-				TMP8 <= unsigned("0000" & c) + unsigned("0000" & d) + unsigned("0000" & e); -- E
+			if c > f then
+				TMP8 <= c + d + e; -- E
 				DIR3 <= "000";
 			else
-				TMP8 <= unsigned("0000" & f) + unsigned("0000" & d) + unsigned("0000" & e); -- SE
+				TMP8 <= f + d + e; -- SE
 				DIR3 <= "101";
 			end if;
 			--TMP8 is max of E, SE
 		elsif v(1) = '1' then
 			if a > d then
-				TMP2 <= unsigned("0000" & a) + unsigned("0000" & b) + unsigned("0000" & c); -- N
+				TMP2 <= a + b + c; -- N
 				DIR1 <= "010";
 			else
-				TMP2 <= unsigned("0000" & d) + unsigned("0000" & b) + unsigned("0000" & c); -- NE
+				TMP2 <= d + b + c; -- NE
 				DIR1 <= "110";
 			end if;
 			--TMP2 is max of N and NE  
@@ -193,28 +192,28 @@ begin
 			g <= f;
 
 			-- e is always the most recently entered pixel: we go from [2, 2] to [255, 255] in the image processing (indexed from [0, 0])
-			e <= i_pixel;
+			e <= unsigned("0000" & i_pixel);
 
 			case state is
 				when "001" =>
-					d <= mem_3_q;
+					d <= unsigned("0000" & mem_3_q);
 				when "010" => 
-					d <= mem_1_q;
+					d <= unsigned("0000" & mem_1_q);
 				when "100" => 
-					d <= mem_2_q;
+					d <= unsigned("0000" & mem_2_q);
 				when others =>
-					d <= "00000000";
+					d <= to_unsigned(0, 12);
 			end case;
 
 			case state is
 				when "001" =>
-					c <= mem_2_q;
+					c <= unsigned("0000" & mem_2_q);
 				when "010" => 
-					c <= mem_3_q;
+					c <= unsigned("0000" & mem_3_q);
 				when "100" => 
-					c <= mem_1_q;
+					c <= unsigned("0000" & mem_1_q);
 				when others =>
-					c <= "00000000";
+					c <= to_unsigned(0, 12);
 			end case;
 
 			--Increment the x_pos and possibly y_pos
@@ -226,10 +225,10 @@ begin
 			
 			-- One square to the left because we're doing matrix shifts in this clock cycle
 			if f > c then
-				TMP11_2 <= unsigned("0000" & g) + unsigned("0000" & h) + unsigned("0000" & a); -- W
+				TMP11 <= f + i + b; -- W
 				DIR4 <= "001";
 			else
-				TMP11_2 <= unsigned("0000" & b) + unsigned("0000" & h) + unsigned("0000" & a); -- NW
+				TMP11 <= c + i + b; -- NW
 				DIR4 <= "100";
 			end if;
 			--TMP11_2 is max of W, NW
