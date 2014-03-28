@@ -65,9 +65,9 @@ architecture main of kirsch is
 
     signal x_pos      : unsigned(7 downto 0) := to_unsigned(0, 8);
     signal y_pos      : unsigned(7 downto 0) := to_unsigned(0, 8);
-    signal state      : unsigned(2 downto 0) := to_unsigned(1, 3);
+    signal state      : unsigned(2 downto 0);
 
-    signal v          : std_logic_vector(8 downto 0) := "000000000";
+    signal v          : std_logic_vector(8 downto 0);
     
     signal a, b, c, d, e, f, g, h, i   : std_logic_vector(7 downto 0);
     
@@ -80,8 +80,8 @@ architecture main of kirsch is
 	signal TMP7_2, TMP9_2              : unsigned(13 downto 0) := to_unsigned(0, 14);
 	signal TMP10_2, TMP11_2, TMP12_2   : unsigned(13 downto 0) := to_unsigned(0, 14);
     
-    signal DIR1, DIR2, DIR3, DIR4, DIR5, DIR6, DIR7  : std_logic_vector(2 downto 0) := "000";
-    signal DIR1_2, DIR2_2, DIR3_2, DIR4_2            : std_logic_vector(2 downto 0) := "000";
+    signal DIR1, DIR2, DIR3, DIR4, DIR5, DIR6  : std_logic_vector(2 downto 0);
+    signal DIR1_2, DIR2_2, DIR3_2, DIR4_2      : std_logic_vector(2 downto 0);
 	
 	signal max1_in1   : std_logic_vector(13 downto 0);
 	signal max1_in2   : std_logic_vector(13 downto 0);
@@ -157,37 +157,43 @@ begin
          o_dir     => max2_dir
 	 );
     --DEBUG
+	debug_led_red <= a & b & "00";
+	--debug_led_grn <= "000" & std_logic_vector(state);
 	
-	debug_led_red <= c & d & "00";
-	debug_led_grn <= "000" & std_logic_vector(state);
     -- Calculate the mem_x_wren signals
     -- We write data into a memory buffer all the time essentially, but we only change the write pos when we get i_valid
     -- This has the same effect as making the write-enable tied into the i_valid signal
-    mem_1_wren <= '1' when state = 0 else '0';
-	mem_2_wren <= '1' when state = 1 else '0';
-	mem_3_wren <= '1' when state = 2 else '0';
+    mem_1_wren <= '1' when state = 1 else '0';
+	mem_2_wren <= '1' when state = 2 else '0';
+	mem_3_wren <= '1' when state = 4 else '0';
 			
-   o_row <= std_logic_vector(y_pos);
-   o_dir <= DIR7;
+    o_row <= std_logic_vector(y_pos);
    
-   with v select
+    with v select
 	 o_mode <= "10" when "000000000",
 			   "11" when others;	
 
-	o_valid <= '1' when ((((y_pos >= 2) AND (x_pos >= 3)) OR (y_pos >= 3)) AND (v(8) = '1'))
-	      else '0';  
-	
-	state <= 1 when ((((y_pos >= 2) AND (x_pos >= 3)) OR (y_pos >= 3)) AND (v(8) = '1'))
+    o_valid <= '1' when ((((y_pos >= 2) AND (x_pos >= 3)) OR (y_pos >= 3)) AND (v(8) = '1'))
 	      else '0';
+	
+	o_valid <= v(8);
 	
     -- Valid bit generator
     v(0) <= i_valid;
-    valid_for : for i in 1 to 8 generate
+    valid_for : for i in 1 to 7 generate
         process begin
             wait until rising_edge(i_clock);
             v(i) <= v(i-1);
         end process;
     end generate;
+	
+	--process begin
+	--	wait until rising_edge(i_clock);
+	--	if(((y_pos >= 2) AND (x_pos >= 3)) OR (y_pos >= 3)) then
+				--this is the last iteration of the algorithm
+	--		 v(8) <= v(7);
+	--	end if;
+	--end process;
 	
     -- Stage 1 pipeline
     --     This pipeline needs to clock the data into the x_2 registers before exiting
@@ -203,13 +209,13 @@ begin
             -- if we insert into memory buffer 3, 'e' is in buffer 3 so c is in buffer 1, etc...)
             
             case state is
-                when "000" =>
+                when "001" =>
                     d <= mem_3_q;
                     c <= mem_2_q;
-                when "001" => 
+                when "010" => 
                     d <= mem_1_q;
                     c <= mem_3_q;
-                when "010" => 
+                when "100" => 
                     d <= mem_2_q;
                     c <= mem_1_q;
                 when others =>
@@ -234,56 +240,59 @@ begin
                 end if;
             
                 y_pos <= y_pos + 1;
-				state <= (state + 1) mod 3;
+				state <= state ROL 1;
             end if;
             x_pos <= x_pos + 1;
-
         end if;
+		
+		if i_reset = '1' then
+			state <= to_unsigned(1, 3);
+		end if;
 
         if(y_pos >= 2 AND x_pos >= 3 AND v(1) = '1') then -- We can start processing data: x_pos is >=3 here because we increment x_pos before getting here
-            TMP1 <= "00000" & (unsigned("0" & b) + unsigned("0" & c));
+            TMP1 <= unsigned("000000" & b) + unsigned("000000" & c);
 			
-			max1_in1  <= "000000" & a;
-			max1_in2  <= "000000" & d;
+			max1_in1  <= "000000" & a; -- N
+			max1_in2  <= "000000" & d; -- NE
             max1_dir1 <= "010";
             max1_dir2 <= "110";
             TMP2 <= unsigned(max1_out);
             DIR1 <= max1_dir; 
 			
-            TMP3 <= "00000" & (unsigned("0" & f) + unsigned("0" & g));
+            TMP3 <= (unsigned("000000" & f) + unsigned("000000" & g));
         end if;
 
         if v(2) = '1' then
             TMP4 <= TMP1 + TMP2; -- Max of N, NE
 			
-			max1_in1 <= "000000" & e;
-			max1_in2 <= "000000" & h;
+			max1_in1 <= "000000" & e; -- S
+			max1_in2 <= "000000" & h; -- SW
             max1_dir1 <= "011";
             max1_dir2 <= "111";
             TMP5 <= unsigned(max1_out);
 			DIR2 <= max1_dir; 
             
-            TMP6 <= "00000" & (unsigned("0" & d) + unsigned("0" & e));
+            TMP6 <= (unsigned("000000" & d) + unsigned("000000" & e));
         end if;    
         
         if v(3) = '1' then    
             TMP7 <= TMP5 + TMP3; -- Max of S, SW
 			
-			max1_in1 <= "000000" & c;
-			max1_in2 <= "000000" & f;
+			max1_in1 <= "000000" & c; -- E
+			max1_in2 <= "000000" & f; -- SE
             max1_dir1 <= "000";
             max1_dir2 <= "101";
             TMP8 <= unsigned(max1_out);
             DIR3 <= max1_dir; 
             
-            TMP9 <= "00000" & (unsigned("0" & h) + unsigned("0" & a));
+            TMP9 <= (unsigned("000000" & h) + unsigned("000000" & a));
         end if;    
             
         if v(4) = '1' then
             TMP10 <= TMP8 + TMP6; -- Max of E, SE
 			
-			max1_in1 <= "000000" & g;
-			max1_in2 <= "000000" & b;
+			max1_in1 <= "000000" & g; -- W
+			max1_in2 <= "000000" & b; -- NW
             max1_dir1 <= "001";
             max1_dir2 <= "100";            
             TMP11 <= unsigned(max1_out);
@@ -324,7 +333,7 @@ begin
         end if;
 
         if v(6) = '1' then 
-			TMP16 <= (TMP13 + TMP12_2);   --  <- A + B + C + D + E + F + G + H
+			TMP16 <= TMP13 + TMP12_2;   --  <- A + B + C + D + E + F + G + H
 			TMP18 <= TMP16 ROL 1;
 			
 			max2_in1 <= std_logic_vector(TMP15);   -- Max of W, NW
@@ -344,11 +353,11 @@ begin
             max2_dir1 <= DIR6;
             max2_dir2 <= DIR5;
 			TMP20 <= unsigned(max2_out) ROL 3; -- Max of ((W, NW), (N, NE)), ((E, SE), (S, SW))
-            DIR7 <= max2_dir; -- dir of ((W, NW), (N, NE)), ((E, SE), (S, SW))
+            o_dir <= max2_dir; -- dir of ((W, NW), (N, NE)), ((E, SE), (S, SW))
         end if;
 
         if v(8) = '1' then			
-			if (((TMP20 - TMP19) > 382) AND ((TMP20 - TMP19) < 6120)) then
+			if (((TMP20 - TMP19) > 383) AND ((TMP20 - TMP19) < 8192)) then
 				o_edge <= '1';
 			else
 				o_edge <= '0';
