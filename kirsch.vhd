@@ -41,13 +41,10 @@ architecture main of kirsch is
     
     signal a, b, c, d, e, f, g, h, i   : unsigned(11 downto 0);
     
-    signal TMP1, TMP2, TMP3, TMP4      : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP5, TMP6, TMP7, TMP8      : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP9, TMP10, TMP11, TMP12   : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP13, TMP14, TMP15, TMP16  : unsigned(11 downto 0) := to_unsigned(0, 12);
-    signal TMP17, TMP18, TMP19, TMP20  : unsigned(11 downto 0) := to_unsigned(0, 12);
-	signal TMP2_2, TMP5_2, TMP11_2     : unsigned(11 downto 0) := to_unsigned(0, 12);
-	signal TMP8_2, TMP12_2             : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP2, TMP5, TMP8, TMP11, TMP14 : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP17, TMP18, TMP20            : unsigned(11 downto 0) := to_unsigned(0, 12);
+	signal TMP2_2, TMP5_2, TMP11_2        : unsigned(11 downto 0) := to_unsigned(0, 12);
+	signal TMP8_2, TMP12_2                : unsigned(11 downto 0) := to_unsigned(0, 12);
     
     signal DIR1, DIR2, DIR3, DIR4, DIR5, DIR6, DIR7  : std_logic_vector(2 downto 0);
     signal DIR1_2, DIR2_2, DIR3_2, DIR4_2            : std_logic_vector(2 downto 0);
@@ -122,12 +119,20 @@ begin
     begin
         wait until rising_edge(i_clock);
         
-		
 		if i_reset = '1' then
 			state <= to_unsigned(1, 3);
 		end if;
 		
-		if v(0) = '1' then
+		if v(1) = '1' then
+			if a > d then
+				TMP2 <= a + b + c; -- N
+				DIR1 <= "010";
+			else
+				TMP2 <= d + b + c; -- NE
+				DIR1 <= "110";
+			end if;
+			--TMP2 is max of N and NE
+		elsif v(0) = '1' then
 			-- Grab the fresh cells from the correct memory buffer depending 
 			-- on the value of state: 
 			-- if we insert into memory buffer 3, 'e' is in buffer 3 so c is in buffer 1, etc...)
@@ -181,15 +186,6 @@ begin
 				DIR4 <= "100";
 			end if;
 			--TMP11_2 is max of W, NW
-		elsif v(1) = '1' then
-			if a > d then
-				TMP2 <= a + b + c; -- N
-				DIR1 <= "010";
-			else
-				TMP2 <= d + b + c; -- NE
-				DIR1 <= "110";
-			end if;
-			--TMP2 is max of N and NE  
 		elsif v(2) = '1' then    
 			if c > f then
 				TMP8 <= c + d + e; -- E
@@ -222,7 +218,11 @@ begin
             DIR3_2 <= DIR3;
             DIR4_2 <= DIR4;			
 	    end if;	
-		
+    end process;
+	
+	process
+	begin
+		wait until rising_edge(i_clock);
 		if v(4) = '1' then
 			if TMP8_2 > TMP5_2 then
 				TMP14 <= TMP8_2; -- Max of E, SE
@@ -232,9 +232,7 @@ begin
 				DIR5 <= DIR2_2;
 			end if;
 			--TMP14 is Max of (E, SE), (S, SW)		
-        elsif v(5) = '1' then 
-			TMP18 <= TMP12_2 sll 1;
-			
+        elsif v(5) = '1' then 			
 			if TMP11_2 > TMP2_2 then
 				TMP17 <= TMP11_2; -- Max of W, NW
 				DIR6 <= DIR4_2;
@@ -244,9 +242,6 @@ begin
 			end if;
 			--TMP17 is Max of (W, NW), (N, NE)
         elsif v(6) = '1' then
-		
-			TMP19 <= TMP18 + TMP12_2;
-		
 			if TMP17 > TMP14 then
 				TMP20 <= TMP17 sll 3; -- Max of (W, NW), (N, NE)
 				DIR7 <= DIR6;
@@ -256,7 +251,7 @@ begin
 			end if;
 			--TMP20 is Max of ((W, NW), (N, NE)), ((E, SE), (S, SW))		
         elsif v(7) = '1' then			
-			if (TMP20 - TMP19) > 383 then
+			if (TMP20 - (TMP12_2 + (TMP12_2 sll 1))) > 383 then
 				o_edge <= '1';				 
 				o_dir <= DIR7;
 			else
