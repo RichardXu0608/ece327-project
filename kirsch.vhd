@@ -1,6 +1,22 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+package direction is
+	subtype dir is std_logic_vector(2 downto 0);
+	constant West 		: dir := "001";
+	constant NorthWest 	: dir := "100";
+	constant North 		: dir:= "010";
+	constant NorthEast 	: dir := "110";
+	constant East  		: dir := "000";
+	constant SouthEast 	: dir := "101";
+	constant South  	: dir := "011";
+	constant SouthWest 	: dir := "111";
+end direction;
+
 library IEEE;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.direction.all;
 
 entity kirsch is
   port(
@@ -118,8 +134,7 @@ begin
 	
     -- Stage 1 pipeline
     --     This pipeline needs to clock the data into the x_2 registers before exiting
-    process
-    begin
+    process begin
         wait until rising_edge(i_clock);
         
 		
@@ -174,39 +189,38 @@ begin
 		
 			-- One square to the left because we're doing matrix shifts in this clock cycle
 			if f > c then
-				TMP11 <= f + i + b; -- W
-				DIR4 <= "001";
+				TMP11 <= f + i + b;
+				DIR4 <= West;
 			else
-				TMP11 <= c + i + b; -- NW
-				DIR4 <= "100";
+				TMP11 <= c + i + b;
+				DIR4 <= NorthWest;
 			end if;
 			--TMP11_2 is max of W, NW
 		elsif v(1) = '1' then
 			if a > d then
-				TMP2 <= a + b + c; -- N
-				DIR1 <= "010";
+				TMP2 <= a + b + c;
+				DIR1 <= North;
 			else
-				TMP2 <= d + b + c; -- NE
-				DIR1 <= "110";
+				TMP2 <= d + b + c;
+				DIR1 <= NorthEast;
 			end if;
 			--TMP2 is max of N and NE  
 		elsif v(2) = '1' then    
 			if c > f then
-				TMP8 <= c + d + e; -- E
-				DIR3 <= "000";
+				TMP8 <= c + d + e;
+				DIR3 <= East;
 			else
-				TMP8 <= f + d + e; -- SE
-				DIR3 <= "101";
+				TMP8 <= f + d + e;
+				DIR3 <= SouthEast;
 			end if;			
 			--TMP8 is max of E, SE
 		elsif v(3) = '1' then
-		
 			if e > h then
-				TMP5 <= e + f + g; -- S
-				DIR2 <= "011";
+				TMP5 <= e + f + g;
+				DIR2 <= South;
 			else
-				TMP5 <= h + f + g; -- SW
-				DIR2 <= "111";
+				TMP5 <= h + f + g;
+				DIR2 <= SouthWest;
 			end if;
 			--TMP5 is max of S and SW
 			
@@ -222,7 +236,10 @@ begin
             DIR3_2 <= DIR3;
             DIR4_2 <= DIR4;			
 	    end if;	
-		
+	end process;
+	
+	process begin
+		wait until rising_edge(i_clock);
 		if v(4) = '1' then
 			if TMP8_2 > TMP5_2 then
 				TMP14 <= TMP8_2; -- Max of E, SE
@@ -234,7 +251,6 @@ begin
 			--TMP14 is Max of (E, SE), (S, SW)		
         elsif v(5) = '1' then 
 			TMP18 <= TMP12_2 sll 1;
-			
 			if TMP11_2 > TMP2_2 then
 				TMP17 <= TMP11_2; -- Max of W, NW
 				DIR6 <= DIR4_2;
@@ -244,9 +260,7 @@ begin
 			end if;
 			--TMP17 is Max of (W, NW), (N, NE)
         elsif v(6) = '1' then
-		
 			TMP19 <= TMP18 + TMP12_2;
-		
 			if TMP17 > TMP14 then
 				TMP20 <= TMP17 sll 3; -- Max of (W, NW), (N, NE)
 				DIR7 <= DIR6;
