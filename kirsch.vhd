@@ -97,8 +97,6 @@ architecture main of kirsch is
 	signal max2_out   : std_logic_vector(13 downto 0);
     signal max2_dir   : std_logic_vector(2 downto 0);
     
-    signal eoi        : std_logic := '0';
-    
     signal mem_1_wren : std_logic;
     signal mem_1_q    : std_logic_vector(7 downto 0);
 
@@ -156,8 +154,9 @@ begin
 		 o_output  => max2_out,
          o_dir     => max2_dir
 	 );
+	 
     --DEBUG
-	debug_led_red <= a & b & "00";
+	--debug_led_red <= a & b & "00";
 	--debug_led_grn <= "000" & std_logic_vector(state);
 	
     -- Calculate the mem_x_wren signals
@@ -173,14 +172,17 @@ begin
 	 o_mode <= "10" when "000000000",
 			   "11" when others;	
 
-    o_valid <= '1' when ((((y_pos >= 2) AND (x_pos >= 3)) OR (y_pos >= 3)) AND (v(8) = '1'))
+    o_valid <= '1' when ((((y_pos >= 2) AND (x_pos >= 2)) OR (y_pos >= 3)) AND (v(8) = '1'))
 	      else '0';
 	
-	o_valid <= v(8);
+	o_edge <= '1' when ((((TMP20 - TMP19) > 383) AND ((TMP20 - TMP19) < 8192))  AND (v(8) = '1'))
+	     else '0';
+	
+	--o_valid <= v(8);
 	
     -- Valid bit generator
     v(0) <= i_valid;
-    valid_for : for i in 1 to 7 generate
+    valid_for : for i in 1 to 8 generate
         process begin
             wait until rising_edge(i_clock);
             v(i) <= v(i-1);
@@ -231,25 +233,13 @@ begin
 			
 			f <= e;
 			g <= f;
-            
-            --Increment the x_pos and possibly y_pos
-            if(x_pos = 255) then
-                if(y_pos = 255) then
-                    --this is the last iteration of the algorithm
-                    eoi <= '1';
-                end if;
-            
-                y_pos <= y_pos + 1;
-				state <= state ROL 1;
-            end if;
-            x_pos <= x_pos + 1;
         end if;
 		
 		if i_reset = '1' then
 			state <= to_unsigned(1, 3);
 		end if;
 
-        if(y_pos >= 2 AND x_pos >= 3 AND v(1) = '1') then -- We can start processing data: x_pos is >=3 here because we increment x_pos before getting here
+        if v(1) = '1' then
             TMP1 <= unsigned("000000" & b) + unsigned("000000" & c);
 			
 			max1_in1  <= "000000" & a; -- N
@@ -312,14 +302,18 @@ begin
             DIR1_2 <= DIR1;
             DIR2_2 <= DIR2;
             DIR3_2 <= DIR3;
-            DIR4_2 <= DIR4;     
+            DIR4_2 <= DIR4;
+
+			--Increment the x_pos and possibly y_pos
+            if(x_pos = 255) then            
+                y_pos <= y_pos + 1;
+				state <= state ROL 1;
+            end if;
+			
+            x_pos <= x_pos + 1;
         end if;
-    end process;
-	
-    process
-    begin
-        wait until rising_edge(i_clock); --Fifth clock boundary
-        if v(5) = '1' then
+		
+		if v(5) = '1' then
 			TMP15 <= TMP9_2 + TMP11_2; -- Max of W, NW
 			TMP13 <= TMP9_2 + TMP3_2; -- <- F + G + H + A
 			
@@ -355,14 +349,5 @@ begin
 			TMP20 <= unsigned(max2_out) ROL 3; -- Max of ((W, NW), (N, NE)), ((E, SE), (S, SW))
             o_dir <= max2_dir; -- dir of ((W, NW), (N, NE)), ((E, SE), (S, SW))
         end if;
-
-        if v(8) = '1' then			
-			if (((TMP20 - TMP19) > 383) AND ((TMP20 - TMP19) < 8192)) then
-				o_edge <= '1';
-			else
-				o_edge <= '0';
-			end if;		
-        end if;
     end process;
-
 end architecture;
