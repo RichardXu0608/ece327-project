@@ -120,8 +120,8 @@ begin
     o_row <= std_logic_vector(y_pos);
    
     with v select
-	 o_mode <= "10" when "000000000",
-			   "11" when others;	
+	o_mode <= "10" when "000000000",
+			  "11" when others;	
 		 	
     -- Valid bit generator	
 	v(0) <= i_valid;
@@ -136,57 +136,41 @@ begin
     --     This pipeline needs to clock the data into the x_2 registers before exiting
     process begin
         wait until rising_edge(i_clock);
-        
-		
 		if i_reset = '1' then
 			state <= to_unsigned(1, 3);
 		end if;
-		
 		if v(0) = '1' then
 			-- Grab the fresh cells from the correct memory buffer depending 
 			-- on the value of state: 
 			-- if we insert into memory buffer 3, 'e' is in buffer 3 so c is in buffer 1, etc...)
 			b <= c;
 			a <= b;
-
 			i <= d;
 			h <= i;
-
 			f <= e;
 			g <= f;
-
 			-- e is always the most recently entered pixel: we go from [2, 2] to [255, 255] in the image processing (indexed from [0, 0])
 			e <= unsigned("0000" & i_pixel);
-
-			case state is
-				when "001" =>
-					d <= unsigned("0000" & mem_3_q);
-				when "010" => 
-					d <= unsigned("0000" & mem_1_q);
-				when "100" => 
-					d <= unsigned("0000" & mem_2_q);
-				when others =>
-					d <= to_unsigned(0, 12);
-			end case;
-
 			case state is
 				when "001" =>
 					c <= unsigned("0000" & mem_2_q);
+					d <= unsigned("0000" & mem_3_q);
 				when "010" => 
 					c <= unsigned("0000" & mem_3_q);
+					d <= unsigned("0000" & mem_1_q);
 				when "100" => 
 					c <= unsigned("0000" & mem_1_q);
+					d <= unsigned("0000" & mem_2_q);
 				when others =>
 					c <= to_unsigned(0, 12);
+					d <= to_unsigned(0, 12);
 			end case;
-
 			--Increment the x_pos and possibly y_pos
 			if(x_pos = 255) then            
 				y_pos <= y_pos + 1;
 				state <= state ROL 1;
 			end if;
 			x_pos <= x_pos + 1;
-		
 			-- One square to the left because we're doing matrix shifts in this clock cycle
 			if f > c then
 				TMP11 <= f + i + b;
@@ -195,7 +179,7 @@ begin
 				TMP11 <= c + i + b;
 				DIR4 <= NorthWest;
 			end if;
-			--TMP11_2 is max of W, NW
+			--TMP11 is max of W, NW
 		elsif v(1) = '1' then
 			if a > d then
 				TMP2 <= a + b + c;
@@ -277,12 +261,12 @@ begin
 				o_edge <= '0';				 
 				o_dir <= "000";
 			end if;
-		end if;
-		
-		if (v(7) = '1' AND ((y_pos >= 2 AND x_pos >= 2) OR y_pos >= 3)) then
-			o_valid <= '1';
-		else
-			o_valid <= '0';
+			--enable o_valid
+			if (y_pos >= 3 OR (y_pos >= 2 AND x_pos >= 2)) then
+				o_valid <= '1';
+			else
+				o_valid <= '0';
+			end if;
 		end if;
     end process;
 end architecture;
