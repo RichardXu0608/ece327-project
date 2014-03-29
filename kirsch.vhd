@@ -114,12 +114,14 @@ begin
 	mem_2_wren <= '1' when state = 2 else '0';
 	mem_3_wren <= '1' when state = 4 else '0';
 			
-    o_row <= std_logic_vector(y_pos);
+    o_row <= std_logic_vector(y_pos);   
    
     with v select
 	o_mode <= "10" when "000000000",
 			  "11" when others;	
-		 	
+	
+	o_valid <= '1' when (v(7) = '1' AND ((y_pos >= 2 AND x_pos >= 3) OR y_pos >= 3)) else '0';
+	
     -- Valid bit generator	
 	v(0) <= i_valid;
     valid_for : for i in 1 to 8 generate
@@ -135,45 +137,39 @@ begin
         wait until rising_edge(i_clock);
 		if i_valid = '1' then
 			-- One square to the left because we're doing matrix shifts in this clock cycle
-			if f > c then
-				TMP11 <= f + i + b;
-				DIR4 <= West;
-			else
+			if c > f then
 				TMP11 <= c + i + b;
 				DIR4 <= NorthWest;
+			else
+				TMP11 <= f + i + b;
+				DIR4 <= West;
 			end if;
 			--TMP11_2 is max of W, NW		
 		elsif v(1) = '1' then
-			if a > d then
-				TMP2 <= a + b + c; -- N
-				DIR1 <= North;
-			else
-				TMP2 <= d + b + c; -- NE
+			if d > a then
+				TMP2 <= d + b + c;
 				DIR1 <= NorthEast;
+			else
+				TMP2 <= a + b + c;
+				DIR1 <= North;
 			end if;
 			--TMP2 is max of N and NE
 		elsif v(2) = '1' then    
-			if c > f then
-				TMP8 <= c + d + e;
-				DIR3 <= East;
-			else
+			if f > c then
 				TMP8 <= f + d + e;
 				DIR3 <= SouthEast;
-			end if;			
-			--TMP8 is max of E, SE		
-	    end if;	
-    end process;
-	
-	process
-	begin
-		wait until rising_edge(i_clock);
-		if v(3) = '1' then
-			if e > h then
-				TMP5 <= e + f + g;
-				DIR2 <= South;
 			else
+				TMP8 <= c + d + e;
+				DIR3 <= East;
+			end if;			
+			--TMP8 is max of E, SE			
+		elsif v(3) = '1' then
+			if h > e then
 				TMP5 <= h + f + g;
 				DIR2 <= SouthWest;
+			else
+				TMP5 <= e + f + g;
+				DIR2 <= South;
 			end if;
 			--TMP5 is max of S and SW
 			
@@ -189,7 +185,11 @@ begin
             DIR3_2 <= DIR3;
             DIR4_2 <= DIR4;	
 		end if;
-		
+    end process;
+	
+	process
+	begin
+		wait until rising_edge(i_clock);		
 		if v(4) = '1' then
 			if TMP8_2 > TMP5_2 then
 				TMP14 <= TMP8_2; -- Max of E, SE
@@ -202,23 +202,23 @@ begin
 		end if;
 		
         if v(5) = '1' then 			
-			if TMP11_2 > TMP2_2 then
-				TMP17 <= TMP11_2; -- Max of W, NW
-				DIR6 <= DIR4_2;
-			else
-				TMP17 <= TMP2_2; -- Max of N, NE
+			if TMP2_2 > TMP11_2 then
+				TMP17 <= TMP2_2; -- Max of W, NW
 				DIR6 <= DIR1_2;
+			else
+				TMP17 <= TMP11_2; -- Max of N, NE
+				DIR6 <= DIR4_2;
 			end if;
 			--TMP17 is Max of (W, NW), (N, NE)
 		end if;
 		
         if v(6) = '1' then
-			if TMP17 > TMP14 then
-				TMP20 <= TMP17 sll 3; -- Max of (W, NW), (N, NE)
-				DIR7 <= DIR6;
-			else
+			if TMP14 > TMP17 then
 				TMP20 <= TMP14 sll 3; -- Max of (E, SE), (S, SW)
 				DIR7 <= DIR5;
+			else
+				TMP20 <= TMP17 sll 3; -- Max of (W, NW), (N, NE)
+				DIR7 <= DIR6;
 			end if;
 			--TMP20 is Max of ((W, NW), (N, NE)), ((E, SE), (S, SW))
 		end if;
@@ -233,11 +233,11 @@ begin
 			end if;
 		end if;
 		
-		if (v(7) = '1' AND ((y_pos >= 2 AND x_pos >= 3) OR y_pos >= 3)) then
-			o_valid <= '1';
-		else
-			o_valid <= '0';
-		end if;
+		--if (v(7) = '1' AND ((y_pos >= 2 AND x_pos >= 3) OR y_pos >= 3)) then
+		--	o_valid <= '1';
+		--else
+		--	o_valid <= '0';
+		--end if;
     end process;
 	
 	process
