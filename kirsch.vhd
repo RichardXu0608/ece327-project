@@ -122,7 +122,7 @@ begin
 			  "11" when others;	
 	
     -- Valid bit generator	
-	v(0) <= i_valid;
+	v(0) <= i_valid when (y_pos >= 2 AND x_pos >= 2) else '0';
 	
     valid_for : for i in 1 to 8 generate
         process begin
@@ -223,7 +223,7 @@ begin
 			--TMP20 is Max of ((W, NW), (N, NE)), ((E, SE), (S, SW))
 		end if;
 		
-        if v(7) = '1' then			
+        if v(7) = '1' then		
 			if ((TMP20 sll 3) - (TMP12_2 + (TMP12_2 sll 1))) > 383 then
 				o_edge <= '1';				 
 				o_dir <= DIR7;
@@ -231,15 +231,19 @@ begin
 				o_edge <= '0';				 
 				o_dir <= "000";
 			end if;
-		end if;
-		
-		if (v(7) = '1' AND ((y_pos >= 2 AND x_pos >= 3) OR y_pos >= 3)) then
 			o_valid <= '1';
-			outputs <= outputs + 1;
-			assert (outputs > 64516) report "TOO MANY PIXELS OUTPUTED" severity failure;
 		else
 			o_valid <= '0';
 		end if;
+		
+		--if (v(7) = '1' AND ((y_pos >= 2 AND x_pos >= 3) OR (y_pos >= 3 and )) then
+		--	o_valid <= '1';
+		--	outputs <= outputs + 1;
+		--	assert (outputs <= 64516) report "TOO MANY PIXELS OUTPUTED" severity failure;
+		--else
+		--	o_valid <= '0';
+		--end if;
+		
     end process;
 	
 	process
@@ -247,7 +251,7 @@ begin
 		wait until rising_edge(i_clock);
 		if i_reset = '1' then
 			state <= to_unsigned(1, 3);
-		elsif v(0) = '1' then
+		elsif i_valid = '1' then
 			-- Grab the fresh cells from the correct memory buffer depending 
 			-- on the value of state: 
 			-- if we insert into memory buffer 3, 'e' is in buffer 3 so c is in buffer 1, etc...)
@@ -274,8 +278,7 @@ begin
 					d <= to_unsigned(0, 12);
 			end case;
 			--Increment the x_pos and possibly y_pos
-			if(x_pos = 254) then
-				x_pos <= to_unsigned(0, 8);
+			if(x_pos = 255) then
 				y_pos <= y_pos + 1;
 				state <= state ROL 1;
 			end if;
