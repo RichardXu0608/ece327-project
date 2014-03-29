@@ -1,7 +1,7 @@
-library IEEE;
+library ieee;
 use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
 
+<<<<<<< HEAD
 entity max is
   port (
     i_input0, i_input1	: in std_logic_vector(12 downto 0);  -- input data
@@ -19,10 +19,24 @@ begin
        o_dir    <= i_dir0   when i_input0 > i_input1
                    else i_dir1;
 end architecture main;
+=======
+package direction is
+	subtype dir is std_logic_vector(2 downto 0);
+	constant West 		: dir := "001";
+	constant NorthWest 	: dir := "100";
+	constant North 		: dir:= "010";
+	constant NorthEast 	: dir := "110";
+	constant East  		: dir := "000";
+	constant SouthEast 	: dir := "101";
+	constant South  	: dir := "011";
+	constant SouthWest 	: dir := "111";
+end direction;
+>>>>>>> paul_dir
 
 library IEEE;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.direction.all;
 
 entity kirsch is
   port(
@@ -55,20 +69,13 @@ end entity;
 
 architecture main of kirsch is
 
-    -- A function to rotate left (rol) a vector by n bits  
-    function "rol" ( a : std_logic_vector; n : natural )
-        return std_logic_vector
-    is
-    begin
-        return std_logic_vector( unsigned(a) rol n );
-    end function;
-
     signal x_pos      : unsigned(7 downto 0) := to_unsigned(0, 8);
     signal y_pos      : unsigned(7 downto 0) := to_unsigned(0, 8);
-    signal state      : unsigned(2 downto 0) := to_unsigned(1, 3);
+    signal state      : unsigned(2 downto 0);
 
-    signal v          : std_logic_vector(8 downto 0) := "000000000";
+    signal v          : std_logic_vector(8 downto 0);
     
+<<<<<<< HEAD
     signal a, b, c, d, e, f, g, h, i   : unsigned(7 downto 0) := to_unsigned(0, 8);
     
     signal TMP1, TMP2, TMP3, TMP4      : unsigned(12 downto 0) := to_unsigned(0, 13);
@@ -99,11 +106,18 @@ architecture main of kirsch is
 	
 	signal edge_1     : std_logic_vector(2 downto 0);
 	signal edge_2     : std_logic_vector(2 downto 0);
+=======
+    signal a, b, c, d, e, f, g, h, i   : unsigned(11 downto 0);
+    
+    signal TMP2, TMP5, TMP8, TMP11, TMP14 : unsigned(11 downto 0) := to_unsigned(0, 12);
+    signal TMP17, TMP18, TMP20            : unsigned(11 downto 0) := to_unsigned(0, 12);
+	signal TMP2_2, TMP5_2, TMP11_2        : unsigned(11 downto 0) := to_unsigned(0, 12);
+	signal TMP8_2, TMP12_2                : unsigned(11 downto 0) := to_unsigned(0, 12);
+    
+    signal DIR1, DIR2, DIR3, DIR4, DIR5, DIR6, DIR7  : std_logic_vector(2 downto 0);
+    signal DIR1_2, DIR2_2, DIR3_2, DIR4_2            : std_logic_vector(2 downto 0);
+>>>>>>> paul_dir
 	
-	signal curr_mode  : std_logic_vector(1 downto 0) := "00";
-    
-    signal eoi        : std_logic             := '0';
-    
     signal mem_1_wren : std_logic;
     signal mem_1_q    : std_logic_vector(7 downto 0);
 
@@ -141,38 +155,19 @@ begin
        wren    => mem_3_wren,
        q       => mem_3_q
     );
-	
-	MAX1 : entity work.max(main)
-	 port map (
-	     i_input0  => max1_in1,
-		 i_input1  => max1_in2,
-         i_dir0    => max1_dir1,
-         i_dir1    => max1_dir2,
-		 o_output  => max1_out,
-         o_dir     => max1_dir
-	 );
 	 
-	MAX2 : entity work.max(main)
-	 port map (
-	     i_input0  => max2_in1,
-		 i_input1  => max2_in2,
-         i_dir0    => max2_dir1,
-         i_dir1    => max2_dir2,
-		 o_output  => max2_out,
-         o_dir     => max2_dir
-	 );
     --DEBUG
-	
-	debug_led_red <= "000000000" & v;
-	
+	--debug_led_red <= a & b & "00";
+	--debug_led_grn <= "000" & std_logic_vector(state);
 	
     -- Calculate the mem_x_wren signals
     -- We write data into a memory buffer all the time essentially, but we only change the write pos when we get i_valid
     -- This has the same effect as making the write-enable tied into the i_valid signal
-    mem_1_wren <= '1' when i = 1 else '0';
-	mem_2_wren <= '1' when i = 2 else '0';
-	mem_3_wren <= '1' when i = 4 else '0';
+    mem_1_wren <= '1' when state = 1 else '0';
+	mem_2_wren <= '1' when state = 2 else '0';
+	mem_3_wren <= '1' when state = 4 else '0';
 			
+<<<<<<< HEAD
    o_row <= std_logic_vector(y_pos);
    o_valid <= '1' when ((((y_pos >= 2) AND (x_pos >= 3)) OR (y_pos >= 3)) AND (v(8) = '1'))
 	     else '0'; 
@@ -183,6 +178,18 @@ begin
    		   
     -- Valid bit generator
     v(0) <= i_valid;
+=======
+    o_row <= std_logic_vector(y_pos);   
+   
+    with v select
+	o_mode <= "10" when "000000000",
+			  "11" when others;	
+	
+	o_valid <= '1' when (v(7) = '1' AND ((y_pos >= 2 AND x_pos >= 3) OR y_pos >= 3)) else '0';
+	
+    -- Valid bit generator	
+	v(0) <= i_valid;
+>>>>>>> paul_dir
     valid_for : for i in 1 to 8 generate
         process begin
             wait until rising_edge(i_clock);
@@ -192,9 +199,9 @@ begin
 	
     -- Stage 1 pipeline
     --     This pipeline needs to clock the data into the x_2 registers before exiting
-    process
-    begin
+    process begin
         wait until rising_edge(i_clock);
+<<<<<<< HEAD
         if v(0) = '1' then
             -- Shift the data from one cell to the other, which saves on reads from the memory units
             a <= b;
@@ -289,23 +296,61 @@ begin
             DIR4 <= max1_dir;
 			
             TMP12 <= TMP1 + TMP6;   --  <- B + C + D + E
+=======
+		if i_valid = '1' then
+			-- One square to the left because we're doing matrix shifts in this clock cycle
+			if c > f then
+				TMP11 <= c + i + b;
+				DIR4 <= NorthWest;
+			else
+				TMP11 <= f + i + b;
+				DIR4 <= West;
+			end if;
+			--TMP11_2 is max of W, NW		
+		elsif v(1) = '1' then
+			if d > a then
+				TMP2 <= d + b + c;
+				DIR1 <= NorthEast;
+			else
+				TMP2 <= a + b + c;
+				DIR1 <= North;
+			end if;
+			--TMP2 is max of N and NE
+		elsif v(2) = '1' then    
+			if f > c then
+				TMP8 <= f + d + e;
+				DIR3 <= SouthEast;
+			else
+				TMP8 <= c + d + e;
+				DIR3 <= East;
+			end if;			
+			--TMP8 is max of E, SE			
+		elsif v(3) = '1' then
+			if h > e then
+				TMP5 <= h + f + g;
+				DIR2 <= SouthWest;
+			else
+				TMP5 <= e + f + g;
+				DIR2 <= South;
+			end if;
+			--TMP5 is max of S and SW
+>>>>>>> paul_dir
 			
 			--Set vars for stage 2
-			TMP3_2 <= TMP3;
-			TMP4_2 <= TMP4;
-			TMP7_2 <= TMP7;
-			TMP9_2 <= TMP9;
-			TMP10_2 <= TMP10; 
-			TMP11_2 <= TMP11;
-			TMP12_2 <= TMP12;
+			TMP2_2 <= TMP2; --TMP2 is max of N and NE
+			TMP5_2 <= TMP5; --TMP5 is max of S and SW
+			TMP8_2 <= TMP8; --TMP8 is max of E, SE
+			TMP11_2 <= TMP11; --TMP11 is max of W, NW
+			TMP12_2 <= a + b + c + d + e + f + g + h;
             
             DIR1_2 <= DIR1;
             DIR2_2 <= DIR2;
             DIR3_2 <= DIR3;
-            DIR4_2 <= DIR4;     
-        end if;
+            DIR4_2 <= DIR4;	
+		end if;
     end process;
 	
+<<<<<<< HEAD
     process
     begin
         wait until rising_edge(i_clock); --Fifth clock boundary
@@ -355,6 +400,99 @@ begin
 			    o_edge <= '0';
 			end if;
         end if;
+=======
+	process
+	begin
+		wait until rising_edge(i_clock);		
+		if v(4) = '1' then
+			if TMP8_2 > TMP5_2 then
+				TMP14 <= TMP8_2; -- Max of E, SE
+				DIR5 <= DIR3_2;
+			else
+				TMP14 <= TMP5_2; -- Max of S, SW
+				DIR5 <= DIR2_2;
+			end if;
+			--TMP14 is Max of (E, SE), (S, SW)
+		end if;
+		
+        if v(5) = '1' then 			
+			if TMP2_2 > TMP11_2 then
+				TMP17 <= TMP2_2; -- Max of W, NW
+				DIR6 <= DIR1_2;
+			else
+				TMP17 <= TMP11_2; -- Max of N, NE
+				DIR6 <= DIR4_2;
+			end if;
+			--TMP17 is Max of (W, NW), (N, NE)
+		end if;
+		
+        if v(6) = '1' then
+			if TMP14 > TMP17 then
+				TMP20 <= TMP14 sll 3; -- Max of (E, SE), (S, SW)
+				DIR7 <= DIR5;
+			else
+				TMP20 <= TMP17 sll 3; -- Max of (W, NW), (N, NE)
+				DIR7 <= DIR6;
+			end if;
+			--TMP20 is Max of ((W, NW), (N, NE)), ((E, SE), (S, SW))
+		end if;
+		
+        if v(7) = '1' then			
+			if (TMP20 - (TMP12_2 + (TMP12_2 sll 1))) > 383 then
+				o_edge <= '1';				 
+				o_dir <= DIR7;
+			else
+				o_edge <= '0';				 
+				o_dir <= "000";
+			end if;
+		end if;
+		
+		--if (v(7) = '1' AND ((y_pos >= 2 AND x_pos >= 3) OR y_pos >= 3)) then
+		--	o_valid <= '1';
+		--else
+		--	o_valid <= '0';
+		--end if;
+>>>>>>> paul_dir
     end process;
-
+	
+	process
+	begin
+		wait until rising_edge(i_clock);
+		if i_reset = '1' then
+			state <= to_unsigned(1, 3);
+		elsif i_valid = '1' then
+			-- Grab the fresh cells from the correct memory buffer depending 
+			-- on the value of state: 
+			-- if we insert into memory buffer 3, 'e' is in buffer 3 so c is in buffer 1, etc...)
+			b <= c;
+			a <= b;
+			i <= d;
+			h <= i;
+			f <= e;
+			g <= f;
+			-- e is always the most recently entered pixel: we go from [2, 2] to [255, 255] in the image processing (indexed from [0, 0])
+			e <= unsigned("0000" & i_pixel);
+			case state is
+				when "001" =>
+					c <= unsigned("0000" & mem_2_q);
+					d <= unsigned("0000" & mem_3_q);
+				when "010" => 
+					c <= unsigned("0000" & mem_3_q);
+					d <= unsigned("0000" & mem_1_q);
+				when "100" => 
+					c <= unsigned("0000" & mem_1_q);
+					d <= unsigned("0000" & mem_2_q);
+				when others =>
+					c <= to_unsigned(0, 12);
+					d <= to_unsigned(0, 12);
+			end case;
+			--Increment the x_pos and possibly y_pos
+			if(x_pos = 255) then            
+				y_pos <= y_pos + 1;
+				state <= state ROL 1;
+			end if;
+			x_pos <= x_pos + 1;
+		end if;
+	end process;
+	
 end architecture;

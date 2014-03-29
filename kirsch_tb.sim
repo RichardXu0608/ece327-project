@@ -11,5 +11,5 @@ add wave sim:/kirsch_tb/out_dir
 add wave sim:/kirsch_tb/out_debug
 
 
-run 10600000 ns
+run 80600000 ns
 

@@ -24,7 +24,7 @@ entity kirsch_tb is
   generic (
     test_num      : natural := 1;
     result_suffix : string  := "sim";
-    bubbles       : natural := 3;
+    bubbles       : natural := 20;
     period        : real    := 20.0
   );
 end kirsch_tb;
@@ -67,7 +67,6 @@ architecture main of kirsch_tb is
   signal out_valid      : std_logic;
   signal out_edge       : std_logic;
   signal out_dir        : direction_ty;
-  signal out_debug      : std_logic_vector(17 downto 0);
 
   --------------------------------------------------------------
   -- 2-d arrays for images
@@ -93,7 +92,6 @@ begin
        direction_ty(o_dir)  => out_dir,
        mode_ty(o_mode)      => out_mode,
        unsigned(o_row)      => out_row,
-	   debug_led_red        => out_debug,
        debug_key            => (others => '0'),
        debug_switch         => (others => '0')
       );
