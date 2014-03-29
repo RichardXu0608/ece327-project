@@ -202,12 +202,12 @@ begin
 		end if;
 		
         if v(5) = '1' then 			
-			if TMP11_2 > TMP2_2 then
-				TMP17 <= TMP11_2; -- Max of N, NE
-				DIR6 <= DIR4_2;
-			else
-				TMP17 <= TMP2_2; -- Max of W, NW
+			if TMP2_2 > TMP11_2  then
+				TMP17 <= TMP2_2; -- Max of N, NE
 				DIR6 <= DIR1_2;
+			else
+				TMP17 <= TMP11_2; -- Max of W, NW
+				DIR6 <= DIR4_2;
 			end if;
 			--TMP17 is Max of (W, NW), (N, NE)
 		end if;
