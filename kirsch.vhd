@@ -112,7 +112,7 @@ begin
 	mem_3_wren <= '1' when state = 4 else '0';
 	
 	o_mode(1) <= NOT i_reset;
-   	o_mode(0) <= '1' when (y_pos > 0 OR x_pos > 0) else '0';
+   	o_mode(0) <= '1' when (y_pos > 0 OR x_pos > 0) OR i_reset = '1' else '0';
 	
     -- Valid bit generator	
 	v(0) <= i_valid when (y_pos >= 2 AND x_pos >= 2) else '0';
@@ -241,6 +241,7 @@ begin
 	process
 	begin
 		wait until rising_edge(i_clock);
+		--Give the reset signal priority
 		if i_reset = '1' then
 			state <= to_unsigned(1, 3);
 			x_pos <= to_unsigned(0, 8);
