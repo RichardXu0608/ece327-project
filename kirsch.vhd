@@ -5,7 +5,7 @@ package direction is
 	subtype dir is std_logic_vector(2 downto 0);
 	constant West 		: dir := "001";
 	constant NorthWest 	: dir := "100";
-	constant North 		: dir:= "010";
+	constant North 		: dir:=  "010";
 	constant NorthEast 	: dir := "110";
 	constant East  		: dir := "000";
 	constant SouthEast 	: dir := "101";
@@ -73,6 +73,7 @@ architecture main of kirsch is
 
     signal mem_3_wren : std_logic;
     signal mem_3_q    : std_logic_vector(7 downto 0);
+	signal outputs    : unsigned(15 downto 0) := to_unsigned(0, 16);
 
 begin  
     --instantiate the 3 instances of the memory module
@@ -120,8 +121,6 @@ begin
 	o_mode <= "10" when "000000000",
 			  "11" when others;	
 	
-	o_valid <= '1' when (v(7) = '1' AND ((y_pos >= 2 AND x_pos >= 3) OR y_pos >= 3)) else '0';
-	
     -- Valid bit generator	
 	v(0) <= i_valid;
 	
@@ -136,7 +135,7 @@ begin
     --     This pipeline needs to clock the data into the x_2 registers before exiting
     process begin
         wait until rising_edge(i_clock);
-		if i_valid = '1' then
+		if v(0) = '1' then
 			-- One square to the left because we're doing matrix shifts in this clock cycle
 			if c > f then
 				TMP11 <= c + i + b;
@@ -192,40 +191,40 @@ begin
 	begin
 		wait until rising_edge(i_clock);		
 		if v(4) = '1' then
-			if TMP8_2 > TMP5_2 then
-				TMP14 <= TMP8_2; -- Max of E, SE
-				DIR5 <= DIR3_2;
-			else
+			if TMP5_2 > TMP8_2 then
 				TMP14 <= TMP5_2; -- Max of S, SW
 				DIR5 <= DIR2_2;
+			else
+				TMP14 <= TMP8_2; -- Max of E, SE
+				DIR5 <= DIR3_2;
 			end if;
 			--TMP14 is Max of (E, SE), (S, SW)
 		end if;
 		
         if v(5) = '1' then 			
-			if TMP2_2 > TMP11_2 then
-				TMP17 <= TMP2_2; -- Max of W, NW
-				DIR6 <= DIR1_2;
-			else
+			if TMP11_2 > TMP2_2 then
 				TMP17 <= TMP11_2; -- Max of N, NE
 				DIR6 <= DIR4_2;
+			else
+				TMP17 <= TMP2_2; -- Max of W, NW
+				DIR6 <= DIR1_2;
 			end if;
 			--TMP17 is Max of (W, NW), (N, NE)
 		end if;
 		
         if v(6) = '1' then
 			if TMP14 > TMP17 then
-				TMP20 <= TMP14 sll 3; -- Max of (E, SE), (S, SW)
+				TMP20 <= TMP14; -- Max of (E, SE), (S, SW)
 				DIR7 <= DIR5;
 			else
-				TMP20 <= TMP17 sll 3; -- Max of (W, NW), (N, NE)
+				TMP20 <= TMP17; -- Max of (W, NW), (N, NE)
 				DIR7 <= DIR6;
 			end if;
 			--TMP20 is Max of ((W, NW), (N, NE)), ((E, SE), (S, SW))
 		end if;
 		
         if v(7) = '1' then			
-			if (TMP20 - (TMP12_2 + (TMP12_2 sll 1))) > 383 then
+			if ((TMP20 sll 3) - (TMP12_2 + (TMP12_2 sll 1))) > 383 then
 				o_edge <= '1';				 
 				o_dir <= DIR7;
 			else
@@ -234,11 +233,13 @@ begin
 			end if;
 		end if;
 		
-		--if (v(7) = '1' AND ((y_pos >= 2 AND x_pos >= 3) OR y_pos >= 3)) then
-		--	o_valid <= '1';
-		--else
-		--	o_valid <= '0';
-		--end if;
+		if (v(7) = '1' AND ((y_pos >= 2 AND x_pos >= 3) OR y_pos >= 3)) then
+			o_valid <= '1';
+			outputs <= outputs + 1;
+			assert (outputs > 64516) report "TOO MANY PIXELS OUTPUTED" severity failure;
+		else
+			o_valid <= '0';
+		end if;
     end process;
 	
 	process
@@ -246,7 +247,7 @@ begin
 		wait until rising_edge(i_clock);
 		if i_reset = '1' then
 			state <= to_unsigned(1, 3);
-		elsif i_valid = '1' then
+		elsif v(0) = '1' then
 			-- Grab the fresh cells from the correct memory buffer depending 
 			-- on the value of state: 
 			-- if we insert into memory buffer 3, 'e' is in buffer 3 so c is in buffer 1, etc...)
@@ -273,7 +274,8 @@ begin
 					d <= to_unsigned(0, 12);
 			end case;
 			--Increment the x_pos and possibly y_pos
-			if(x_pos = 255) then            
+			if(x_pos = 254) then
+				x_pos <= to_unsigned(0, 8);
 				y_pos <= y_pos + 1;
 				state <= state ROL 1;
 			end if;
