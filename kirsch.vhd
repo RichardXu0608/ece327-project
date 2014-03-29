@@ -199,9 +199,7 @@ begin
 				DIR5 <= DIR3_2;
 			end if;
 			--TMP14 is Max of (E, SE), (S, SW)
-		end if;
-		
-        if v(5) = '1' then 			
+        elsif v(5) = '1' then 			
 			if TMP2_2 > TMP11_2  then
 				TMP17 <= TMP2_2; -- Max of N, NE
 				DIR6 <= DIR1_2;
@@ -210,9 +208,7 @@ begin
 				DIR6 <= DIR4_2;
 			end if;
 			--TMP17 is Max of (W, NW), (N, NE)
-		end if;
-		
-        if v(6) = '1' then
+        elsif v(6) = '1' then
 			if TMP14 > TMP17 then
 				TMP20 <= TMP14; -- Max of (E, SE), (S, SW)
 				DIR7 <= DIR5;
@@ -221,9 +217,7 @@ begin
 				DIR7 <= DIR6;
 			end if;
 			--TMP20 is Max of ((W, NW), (N, NE)), ((E, SE), (S, SW))
-		end if;
-		
-        if v(7) = '1' then		
+        elsif v(7) = '1' then		
 			if ((TMP20 sll 3) - (TMP12_2 + (TMP12_2 sll 1))) > 383 then
 				o_edge <= '1';				 
 				o_dir <= DIR7;
