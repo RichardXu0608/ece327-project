@@ -133,12 +133,17 @@ begin
     --     This pipeline needs to clock the data into the x_2 registers before exiting
     process begin
         wait until rising_edge(i_clock);
-        
-		if i_reset = '1' then
-			state <= to_unsigned(1, 3);
-		end if;
-		
-		if v(1) = '1' then
+		if i_valid = '1' then
+			-- One square to the left because we're doing matrix shifts in this clock cycle
+			if f > c then
+				TMP11 <= f + i + b;
+				DIR4 <= West;
+			else
+				TMP11 <= c + i + b;
+				DIR4 <= NorthWest;
+			end if;
+			--TMP11_2 is max of W, NW		
+		elsif v(1) = '1' then
 			if a > d then
 				TMP2 <= a + b + c; -- N
 				DIR1 <= North;
@@ -147,7 +152,100 @@ begin
 				DIR1 <= NorthEast;
 			end if;
 			--TMP2 is max of N and NE
-		elsif v(0) = '1' then
+		elsif v(2) = '1' then    
+			if c > f then
+				TMP8 <= c + d + e;
+				DIR3 <= East;
+			else
+				TMP8 <= f + d + e;
+				DIR3 <= SouthEast;
+			end if;			
+			--TMP8 is max of E, SE		
+	    end if;	
+    end process;
+	
+	process
+	begin
+		wait until rising_edge(i_clock);
+		if v(3) = '1' then
+			if e > h then
+				TMP5 <= e + f + g;
+				DIR2 <= South;
+			else
+				TMP5 <= h + f + g;
+				DIR2 <= SouthWest;
+			end if;
+			--TMP5 is max of S and SW
+			
+			--Set vars for stage 2
+			TMP2_2 <= TMP2; --TMP2 is max of N and NE
+			TMP5_2 <= TMP5; --TMP5 is max of S and SW
+			TMP8_2 <= TMP8; --TMP8 is max of E, SE
+			TMP11_2 <= TMP11; --TMP11 is max of W, NW
+			TMP12_2 <= a + b + c + d + e + f + g + h;
+            
+            DIR1_2 <= DIR1;
+            DIR2_2 <= DIR2;
+            DIR3_2 <= DIR3;
+            DIR4_2 <= DIR4;	
+		end if;
+		
+		if v(4) = '1' then
+			if TMP8_2 > TMP5_2 then
+				TMP14 <= TMP8_2; -- Max of E, SE
+				DIR5 <= DIR3_2;
+			else
+				TMP14 <= TMP5_2; -- Max of S, SW
+				DIR5 <= DIR2_2;
+			end if;
+			--TMP14 is Max of (E, SE), (S, SW)
+		end if;
+		
+        if v(5) = '1' then 			
+			if TMP11_2 > TMP2_2 then
+				TMP17 <= TMP11_2; -- Max of W, NW
+				DIR6 <= DIR4_2;
+			else
+				TMP17 <= TMP2_2; -- Max of N, NE
+				DIR6 <= DIR1_2;
+			end if;
+			--TMP17 is Max of (W, NW), (N, NE)
+		end if;
+		
+        if v(6) = '1' then
+			if TMP17 > TMP14 then
+				TMP20 <= TMP17 sll 3; -- Max of (W, NW), (N, NE)
+				DIR7 <= DIR6;
+			else
+				TMP20 <= TMP14 sll 3; -- Max of (E, SE), (S, SW)
+				DIR7 <= DIR5;
+			end if;
+			--TMP20 is Max of ((W, NW), (N, NE)), ((E, SE), (S, SW))
+		end if;
+		
+        if v(7) = '1' then			
+			if (TMP20 - (TMP12_2 + (TMP12_2 sll 1))) > 383 then
+				o_edge <= '1';				 
+				o_dir <= DIR7;
+			else
+				o_edge <= '0';				 
+				o_dir <= "000";
+			end if;
+		end if;
+		
+		if (v(7) = '1' AND ((y_pos >= 2 AND x_pos >= 3) OR y_pos >= 3)) then
+			o_valid <= '1';
+		else
+			o_valid <= '0';
+		end if;
+    end process;
+	
+	process
+	begin
+		wait until rising_edge(i_clock);
+		if i_reset = '1' then
+			state <= to_unsigned(1, 3);
+		elsif i_valid = '1' then
 			-- Grab the fresh cells from the correct memory buffer depending 
 			-- on the value of state: 
 			-- if we insert into memory buffer 3, 'e' is in buffer 3 so c is in buffer 1, etc...)
@@ -179,93 +277,7 @@ begin
 				state <= state ROL 1;
 			end if;
 			x_pos <= x_pos + 1;
-			-- One square to the left because we're doing matrix shifts in this clock cycle
-			if f > c then
-				TMP11 <= f + i + b;
-				DIR4 <= West;
-			else
-				TMP11 <= c + i + b;
-				DIR4 <= NorthWest;
-			end if;
-
-			--TMP11_2 is max of W, NW
-		elsif v(2) = '1' then    
-			if c > f then
-				TMP8 <= c + d + e;
-				DIR3 <= East;
-			else
-				TMP8 <= f + d + e;
-				DIR3 <= SouthEast;
-			end if;			
-			--TMP8 is max of E, SE
-		elsif v(3) = '1' then
-			if e > h then
-				TMP5 <= e + f + g;
-				DIR2 <= South;
-			else
-				TMP5 <= h + f + g;
-				DIR2 <= SouthWest;
-			end if;
-			--TMP5 is max of S and SW
-			
-			--Set vars for stage 2
-			TMP2_2 <= TMP2; --TMP2 is max of N and NE
-			TMP5_2 <= TMP5; --TMP5 is max of S and SW
-			TMP8_2 <= TMP8; --TMP8 is max of E, SE
-			TMP11_2 <= TMP11; --TMP11 is max of W, NW
-			TMP12_2 <= a + b + c + d + e + f + g + h;
-            
-            DIR1_2 <= DIR1;
-            DIR2_2 <= DIR2;
-            DIR3_2 <= DIR3;
-            DIR4_2 <= DIR4;			
-	    end if;	
-    end process;
+		end if;
+	end process;
 	
-	process
-	begin
-		wait until rising_edge(i_clock);
-		if v(4) = '1' then
-			if TMP8_2 > TMP5_2 then
-				TMP14 <= TMP8_2; -- Max of E, SE
-				DIR5 <= DIR3_2;
-			else
-				TMP14 <= TMP5_2; -- Max of S, SW
-				DIR5 <= DIR2_2;
-			end if;
-			--TMP14 is Max of (E, SE), (S, SW)		
-        elsif v(5) = '1' then 			
-			if TMP11_2 > TMP2_2 then
-				TMP17 <= TMP11_2; -- Max of W, NW
-				DIR6 <= DIR4_2;
-			else
-				TMP17 <= TMP2_2; -- Max of N, NE
-				DIR6 <= DIR1_2;
-			end if;
-			--TMP17 is Max of (W, NW), (N, NE)
-        elsif v(6) = '1' then
-			if TMP17 > TMP14 then
-				TMP20 <= TMP17 sll 3; -- Max of (W, NW), (N, NE)
-				DIR7 <= DIR6;
-			else
-				TMP20 <= TMP14 sll 3; -- Max of (E, SE), (S, SW)
-				DIR7 <= DIR5;
-			end if;
-			--TMP20 is Max of ((W, NW), (N, NE)), ((E, SE), (S, SW))		
-        elsif v(7) = '1' then			
-			if (TMP20 - (TMP12_2 + (TMP12_2 sll 1))) > 383 then
-				o_edge <= '1';				 
-				o_dir <= DIR7;
-			else
-				o_edge <= '0';				 
-				o_dir <= "000";
-			end if;
-		end if;
-		
-		if (v(7) = '1' AND ((y_pos >= 2 AND x_pos >= 3) OR y_pos >= 3)) then
-			o_valid <= '1';
-		else
-			o_valid <= '0';
-		end if;
-    end process;
 end architecture;
