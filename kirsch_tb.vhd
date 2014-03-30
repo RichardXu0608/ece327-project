@@ -67,6 +67,7 @@ architecture main of kirsch_tb is
   signal out_valid      : std_logic;
   signal out_edge       : std_logic;
   signal out_dir        : direction_ty;
+  signal out_dbg        : std_logic_vector(17 downto 0);
 
   --------------------------------------------------------------
   -- 2-d arrays for images
@@ -93,7 +94,8 @@ begin
        mode_ty(o_mode)      => out_mode,
        unsigned(o_row)      => out_row,
        debug_key            => (others => '0'),
-       debug_switch         => (others => '0')
+       debug_switch         => (others => '0'),
+	   debug_led_red        => out_dbg
       );
 
     ----------------------------------------------------
@@ -116,6 +118,7 @@ begin
       for i in 1 to 5 loop
         wait until rising_edge(clock);
       end loop;
+	  wait for clk_period/4; -- NEW LINE
       reset <= '0';
       wait;
     end process;

@@ -53,18 +53,18 @@ architecture main of kirsch is
     signal y_pos      : unsigned(7 downto 0) := to_unsigned(0, 8);
     signal state      : unsigned(2 downto 0);
 
-    signal v          : std_logic_vector(7 downto 0);
+    signal v                              : std_logic_vector(7 downto 0);
 	
-    signal a, b, c, d, e, f, g, h, i   : unsigned(7 downto 0);
+    signal a, b, c, d, e, f, g, h, i      : unsigned(7 downto 0);
     
 	signal MAXA, ADDER_A_OUT, ADDER_B_OUT : unsigned(11 downto 0) := to_unsigned(0, 12);
     signal TMP8, TMP11, TMP13, TMP14      : unsigned(11 downto 0) := to_unsigned(0, 12);
     signal TMP12, TMP17, TMP20            : unsigned(11 downto 0) := to_unsigned(0, 12);
 	signal TMP2_2, TMP11_2                : unsigned(11 downto 0) := to_unsigned(0, 12);
 	signal TMP8_2, TMP12_2                : unsigned(11 downto 0) := to_unsigned(0, 12);
-    
-    signal DIR1, DIR2, DIR3, DIR4, DIR5, DIR6, DIR7  : std_logic_vector(2 downto 0);
-    signal DIR1_2, DIR2_2, DIR3_2, DIR4_2            : std_logic_vector(2 downto 0);
+	
+    signal DIR1, DIR3, DIR4, DIR5, DIR6, DIR7    : std_logic_vector(2 downto 0);
+    signal DIR1_2, DIR2_2, DIR3_2, DIR4_2        : std_logic_vector(2 downto 0);
 	
     signal mem_1_wren : std_logic;
     signal mem_1_q    : std_logic_vector(7 downto 0);
@@ -111,8 +111,11 @@ begin
 	mem_2_wren <= '1' when state = 2 else '0';
 	mem_3_wren <= '1' when state = 4 else '0';
 	
+	debug_led_red(17 downto 10) <= std_logic_vector(x_pos);
+	debug_led_red(9 downto 2)   <= std_logic_vector(y_pos);
+	
 	o_mode(1) <= NOT i_reset;
-   	o_mode(0) <= '1' when (y_pos > 0 OR x_pos > 0) OR i_reset = '1' else '0';
+   	o_mode(0) <= '0' when (y_pos = 0 AND x_pos = 0) OR i_reset = '1' else '1';
 	
     -- Valid bit generator	
 	v(0) <= i_valid when (y_pos >= 2 AND x_pos >= 2) else '0';
@@ -234,8 +237,9 @@ begin
 			o_valid <= '1';
 		else
 			o_valid <= '0';
+			o_edge <= '0';				 
+			o_dir <= "000";
 		end if;
-		
     end process;
 	
 	process
@@ -282,7 +286,11 @@ begin
 				state <= state ROL 1;
 			end if;
 			x_pos <= x_pos + 1;
+		else
+			state <= state;
+			x_pos <= x_pos;
+			y_pos <= y_pos;
 		end if;
 	end process;
-	
 end architecture;
+
