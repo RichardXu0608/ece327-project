@@ -55,9 +55,8 @@ architecture main of kirsch is
 
     signal v                              : std_logic_vector(7 downto 0);
 	
-    signal a, b, c, d, e, f, g, h, i      : unsigned(7 downto 0);
-    
-	signal MAXA                           : unsigned(7 downto 0) := to_unsigned(0, 8);
+    signal a, b, c, d, e, f, g, h, i      : unsigned(11 downto 0);
+	signal MAXA                           : unsigned(11 downto 0) := to_unsigned(0, 12);
 	signal ADDER_OUT                      : unsigned(11 downto 0) := to_unsigned(0, 12);
     signal TMP8, TMP11, TMP13, TMP14      : unsigned(11 downto 0) := to_unsigned(0, 12);
     signal TMP12, TMP17, TMP20            : unsigned(11 downto 0) := to_unsigned(0, 12);
@@ -137,7 +136,7 @@ begin
 				MAXA <= f;
 				DIR4 <= West;
 			end if;
-			ADDER_OUT <= ("0000" & i) + ("0000" & b); --Note this is actually a + h
+			ADDER_OUT <= i + b; --Note this is actually a + h
 			
 		elsif v(1) = '1' then
 			if f > c then
@@ -147,8 +146,8 @@ begin
 				MAXA <= c;
 				DIR3 <= East;
 			end if;
-			ADDER_OUT <= ("0000" & d) + ("0000" & e);
-			TMP11 <= ("0000" & MAXA) + ADDER_OUT; --TMP11 is max of W, NW		
+			ADDER_OUT <= d + e;
+			TMP11 <= MAXA + ADDER_OUT; --TMP11 is max of W, NW
 			TMP12 <= ADDER_OUT; -- (a + h)
 			
 		elsif v(2) = '1' then   
@@ -159,8 +158,8 @@ begin
 				MAXA <= a;
 				DIR1 <= North;
 			end if;
-			ADDER_OUT <= ("0000" & b) + ("0000" & c);
-			TMP8 <= ("0000" & MAXA) + ADDER_OUT; --TMP8 is max of E, SE
+			ADDER_OUT <= b + c;
+			TMP8 <= MAXA + ADDER_OUT; --TMP8 is max of E, SE
 			TMP12 <= TMP12 + ADDER_OUT; -- (a + h + d + e)
 				
 		elsif v(3) = '1' then
@@ -171,8 +170,8 @@ begin
 				MAXA <= e;
 				DIR2_2 <= South;
 			end if;
-			ADDER_OUT <= ("0000" & f) + ("0000" & g);
-			TMP2_2  <= ("0000" & MAXA) + ADDER_OUT; --TMP2_2 is max of N and NE
+			ADDER_OUT <= f + g;
+			TMP2_2  <= MAXA + ADDER_OUT; --TMP2_2 is max of N and NE
 			
 			--Set vars for stage 2
 			TMP8_2  <= TMP8; --TMP8 is max of E, SE
@@ -191,14 +190,14 @@ begin
 		if v(4) = '1' then
 			--ADDER_B_OUT is the result of the previous calculation (max of S and SW)
 			if (MAXA + ADDER_OUT) > TMP8_2 then
-				TMP14 <= ("0000" & MAXA) + ADDER_OUT; -- Max of S, SW
+				TMP14 <= MAXA + ADDER_OUT; -- Max of S, SW
 				DIR5 <= DIR2_2;	
 			else
 				TMP14 <= TMP8_2; -- Max of E, SE
 				DIR5 <= DIR3_2;
 			end if;
 			--TMP14 is Max of (E, SE), (S, SW)
-			TMP13 <= TMP12_2 + ADDER_OUT; --(a + h + d + e + b + c + f + g) 
+			TMP13 <= (TMP12_2 + ADDER_OUT); --(a + h + d + e + b + c + f + g) 
 		end if;
 		
         if v(5) = '1' then 			
@@ -210,21 +209,22 @@ begin
 				DIR6 <= DIR4_2;
 			end if;
 			--TMP17 is Max of (W, NW), (N, NE)
+			TMP13 <= TMP13 + (TMP13 sll 1);
 		end if;
 		
         if v(6) = '1' then
 			if TMP14 > TMP17 then
-				TMP20 <= TMP14 sll 3; -- Max of (E, SE), (S, SW)
+				TMP20 <= (TMP14 sll 3) - TMP13; -- Max of (E, SE), (S, SW)
 				DIR7 <= DIR5;
 			else
-				TMP20 <= TMP17 sll 3; -- Max of (W, NW), (N, NE)
+				TMP20 <= (TMP17 sll 3) - TMP13; -- Max of (W, NW), (N, NE)
 				DIR7 <= DIR6;
 			end if;
 			--TMP20 is Max of ((W, NW), (N, NE)), ((E, SE), (S, SW))
 		end if;
 		
         if v(7) = '1' then		
-			if (TMP20 - (TMP13 + (TMP13 sll 1))) > 383 then
+			if TMP20 > 383 then
 				o_edge <= '1';				 
 				o_dir <= DIR7;
 			else
@@ -259,20 +259,20 @@ begin
 			f <= e;
 			g <= f;
 			-- e is always the most recently entered pixel: we go from [2, 2] to [255, 255] in the image processing (indexed from [0, 0])
-			e <= unsigned(i_pixel);
+			e <= unsigned("0000" & i_pixel);
 			case state is
 				when "001" =>
-					c <= unsigned(mem_2_q);
-					d <= unsigned(mem_3_q);
+					c <= unsigned("0000" & mem_2_q);
+					d <= unsigned("0000" & mem_3_q);
 				when "010" => 
-					c <= unsigned(mem_3_q);
-					d <= unsigned(mem_1_q);
+					c <= unsigned("0000" & mem_3_q);
+					d <= unsigned("0000" & mem_1_q);
 				when "100" => 
-					c <= unsigned(mem_1_q);
-					d <= unsigned(mem_2_q);
+					c <= unsigned("0000" & mem_1_q);
+					d <= unsigned("0000" & mem_2_q);
 				when others =>
-					c <= to_unsigned(0, 8);
-					d <= to_unsigned(0, 8);
+					c <= to_unsigned(0, 12);
+					d <= to_unsigned(0, 12);
 			end case;
 			
 			o_row <= std_logic_vector(y_pos);
