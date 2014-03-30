@@ -57,7 +57,8 @@ architecture main of kirsch is
 	
     signal a, b, c, d, e, f, g, h, i      : unsigned(7 downto 0);
     
-	signal MAXA, ADDER_A_OUT, ADDER_B_OUT : unsigned(11 downto 0) := to_unsigned(0, 12);
+	signal MAXA                           : unsigned(7 downto 0) := to_unsigned(0, 8);
+	signal ADDER_OUT                      : unsigned(11 downto 0) := to_unsigned(0, 12);
     signal TMP8, TMP11, TMP13, TMP14      : unsigned(11 downto 0) := to_unsigned(0, 12);
     signal TMP12, TMP17, TMP20            : unsigned(11 downto 0) := to_unsigned(0, 12);
 	signal TMP2_2, TMP11_2                : unsigned(11 downto 0) := to_unsigned(0, 12);
@@ -116,7 +117,6 @@ begin
 	
     -- Valid bit generator	
 	v(0) <= i_valid when (y_pos >= 2 AND x_pos >= 2) else '0';
-	
     valid_for : for i in 1 to 7 generate
         process begin
             wait until rising_edge(i_clock);
@@ -131,53 +131,53 @@ begin
 		if v(0) = '1' then
 			-- One square to the left because we're doing matrix shifts in this clock cycle
 			if c > f then
-				MAXA <= ("0000" & c);
+				MAXA <= c;
 				DIR4 <= NorthWest;
 			else
-				MAXA <= ("0000" & f);
+				MAXA <= f;
 				DIR4 <= West;
 			end if;
-			ADDER_B_OUT <= ("0000" & i) + ("0000" & b); --Note this is actually a + h
+			ADDER_OUT <= ("0000" & i) + ("0000" & b); --Note this is actually a + h
 			
 		elsif v(1) = '1' then
 			if f > c then
-				MAXA <= ("0000" & f);
+				MAXA <= f;
 				DIR3 <= SouthEast;
 			else
-				MAXA <= ("0000" & c);
+				MAXA <= c;
 				DIR3 <= East;
 			end if;
-			ADDER_B_OUT <= ("0000" & d) + ("0000" & e);
-			TMP11 <= MAXA + ADDER_B_OUT; --TMP11 is max of W, NW		
-			TMP12 <= ADDER_B_OUT; -- (a + h)
+			ADDER_OUT <= ("0000" & d) + ("0000" & e);
+			TMP11 <= ("0000" & MAXA) + ADDER_OUT; --TMP11 is max of W, NW		
+			TMP12 <= ADDER_OUT; -- (a + h)
 			
 		elsif v(2) = '1' then   
 			if d > a then
-				MAXA <= ("0000" & d);
+				MAXA <= d;
 				DIR1 <= NorthEast;
 			else
-				MAXA <= ("0000" & a);
+				MAXA <= a;
 				DIR1 <= North;
 			end if;
-			ADDER_B_OUT <= ("0000" & b) + ("0000" & c);
-			TMP8 <= MAXA + ADDER_B_OUT; --TMP8 is max of E, SE
-			TMP12 <= TMP12 + ADDER_B_OUT; -- (a + h + d + e)
+			ADDER_OUT <= ("0000" & b) + ("0000" & c);
+			TMP8 <= ("0000" & MAXA) + ADDER_OUT; --TMP8 is max of E, SE
+			TMP12 <= TMP12 + ADDER_OUT; -- (a + h + d + e)
 				
 		elsif v(3) = '1' then
 			if h > e then
-				MAXA <= ("0000" & h);
+				MAXA <= h;
 				DIR2_2 <= SouthWest;
 			else
-				MAXA <= ("0000" & e);
+				MAXA <= e;
 				DIR2_2 <= South;
 			end if;
-			ADDER_B_OUT <= ("0000" & f) + ("0000" & g);
-			TMP2_2  <= MAXA + ADDER_B_OUT; --TMP2_2 is max of N and NE
+			ADDER_OUT <= ("0000" & f) + ("0000" & g);
+			TMP2_2  <= ("0000" & MAXA) + ADDER_OUT; --TMP2_2 is max of N and NE
 			
 			--Set vars for stage 2
 			TMP8_2  <= TMP8; --TMP8 is max of E, SE
 			TMP11_2 <= TMP11; --TMP11 is max of W, NW
-			TMP12_2 <= TMP12 + ADDER_B_OUT; -- (a + h + d + e + b + c)
+			TMP12_2 <= TMP12 + ADDER_OUT; -- (a + h + d + e + b + c)
             
             DIR1_2 <= DIR1;
             DIR3_2 <= DIR3;
@@ -189,16 +189,16 @@ begin
 	begin
 		wait until rising_edge(i_clock);		
 		if v(4) = '1' then
-			--ADDER_A_OUT is the result of the previous calculation (max of S and SW)
-			if (MAXA + ADDER_B_OUT) > TMP8_2 then
-				TMP14 <= (MAXA + ADDER_B_OUT); -- Max of S, SW
+			--ADDER_B_OUT is the result of the previous calculation (max of S and SW)
+			if (MAXA + ADDER_OUT) > TMP8_2 then
+				TMP14 <= ("0000" & MAXA) + ADDER_OUT; -- Max of S, SW
 				DIR5 <= DIR2_2;	
 			else
 				TMP14 <= TMP8_2; -- Max of E, SE
 				DIR5 <= DIR3_2;
 			end if;
 			--TMP14 is Max of (E, SE), (S, SW)
-			TMP13 <= TMP12_2 + ADDER_B_OUT; --(a + h + d + e + b + c + f + g) 
+			TMP13 <= TMP12_2 + ADDER_OUT; --(a + h + d + e + b + c + f + g) 
 		end if;
 		
         if v(5) = '1' then 			
@@ -214,17 +214,17 @@ begin
 		
         if v(6) = '1' then
 			if TMP14 > TMP17 then
-				TMP20 <= TMP14; -- Max of (E, SE), (S, SW)
+				TMP20 <= TMP14 sll 3; -- Max of (E, SE), (S, SW)
 				DIR7 <= DIR5;
 			else
-				TMP20 <= TMP17; -- Max of (W, NW), (N, NE)
+				TMP20 <= TMP17 sll 3; -- Max of (W, NW), (N, NE)
 				DIR7 <= DIR6;
 			end if;
 			--TMP20 is Max of ((W, NW), (N, NE)), ((E, SE), (S, SW))
 		end if;
 		
         if v(7) = '1' then		
-			if ((TMP20 sll 3) - (TMP13 + (TMP13 sll 1))) > 383 then
+			if (TMP20 - (TMP13 + (TMP13 sll 1))) > 383 then
 				o_edge <= '1';				 
 				o_dir <= DIR7;
 			else
