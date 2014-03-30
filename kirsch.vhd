@@ -111,9 +111,6 @@ begin
 	mem_2_wren <= '1' when state = 2 else '0';
 	mem_3_wren <= '1' when state = 4 else '0';
 	
-	debug_led_red(17 downto 10) <= std_logic_vector(x_pos);
-	debug_led_red(9 downto 2)   <= std_logic_vector(y_pos);
-	
 	o_mode(1) <= NOT i_reset;
    	o_mode(0) <= '0' when (y_pos = 0 AND x_pos = 0) OR i_reset = '1' else '1';
 	
